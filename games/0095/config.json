@@ -169,8 +169,9 @@
             }
         }
     ],
-    "daytime_minutes": 3.5,
-    "nighttime_minutes": 2.0,
+    "daytime_minutes": 3.0,
+    "nighttime_minutes": 0.5,
     "notes": "all llm, 7 players, 2 mafia",
-    "preparation_command": ".\\prepare_config.py -o openai_7_7_2 -p 7 -l 7 -m 2 -dt 3 -nt .5"
+    "preparation_command": ".\\prepare_config.py -o openai_7_7_2 -p 7 -l 7 -m 2 -dt 3 -nt .5",
+    "config_original_path_when_game_created": ".\\configurations\\openai_7_7_2.json"
 }

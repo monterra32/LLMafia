@@ -3,6 +3,7 @@ import re
 from abc import ABC, abstractmethod
 from game_constants import GAME_CONFIG_FILE, PLAYERS_KEY_IN_CONFIG, get_role_string, GAME_START_TIME_FILE, PERSONAL_CHAT_FILE_FORMAT, \
     MESSAGE_PARSING_PATTERN, SCHEDULING_DECISION_LOG, MODEL_CHOSE_TO_USE_TURN_LOG, MODEL_CHOSE_TO_PASS_TURN_LOG
+from game_status_checks import is_nighttime
 from llm_players.llm_constants import turn_task_into_prompt, GENERAL_SYSTEM_INFO, \
     PASS_TURN_TOKEN_KEY, USE_TURN_TOKEN_KEY, WORDS_PER_SECOND_WAITING_KEY, PASS_TURN_TOKEN_OPTIONS
 # from llm_players.llm_wrapper import LLMWrapper
@@ -117,10 +118,22 @@ class LLMPlayer(ABC):
         return generate
 
     def get_vote(self, message_history, candidate_vote_names):
-        task = f"From the following remaining players, which player you want to vote for " \
-               f"to eliminate? Base your answer on the conversation as seen in the message " \
+        task_nighttime = f"Since you are a mafia, it is now time for you to determine who you want to kill. " \
+               f"From the following remaining players, which player you want " \
+               f"to kill? Base your answer on the conversation as seen in the message " \
                f"history, and especially on what you ({self.name}) said. " \
+               f"Think through your choice carefully, as it will affect the game outcome. " \
                f"Reply with only one name from the list, and nothing but that name: "
+        task_daytime = f"From the following remaining players, which player you want to vote for " \
+               f"to lynch? Base your answer on the conversation as seen in the message " \
+               f"history, and especially on what you ({self.name}) said. " \
+               f"Think through your choice carefully, as it will affect the game outcome. " \
+               f"Reply with only one name from the list, and nothing but that name: "
+        task = ""
+        if is_nighttime(self.game_dir):
+            task = task_nighttime
+        else:
+            task = task_daytime
         task += ", ".join(candidate_vote_names)
         prompt = turn_task_into_prompt(task, message_history)
         system_info = self.get_system_info_message()

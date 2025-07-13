@@ -91,6 +91,8 @@ def add_message_to_game(player, message_history):
     is_nighttime_at_start = is_nighttime(game_dir)
     if not player.is_mafia and is_nighttime_at_start:
         return  # only mafia can communicate during nighttime
+    if is_time_to_vote(game_dir):
+        return  # sometimes the messages is generated when it's already too late, so drop it
     message = player.generate_message(message_history).strip()
     if is_time_to_vote(game_dir):
         return  # sometimes the messages is generated when it's already too late, so drop it
@@ -120,11 +122,11 @@ def main():
     message_history = []
     num_read_lines_manager = num_read_lines_daytime = num_read_lines_nighttime = 0
     while not is_game_over(game_dir):
-        num_read_lines_manager += read_messages_from_file(
-            message_history, PUBLIC_MANAGER_CHAT_FILE, num_read_lines_manager)
-        # only current phase file will have new messages, so no need to run expensive is_nighttime()
+    # only current phase file will have new messages, so no need to run expensive is_nighttime()
         num_read_lines_daytime += read_messages_from_file(
-            message_history, PUBLIC_DAYTIME_CHAT_FILE, num_read_lines_daytime)
+    message_history, PUBLIC_DAYTIME_CHAT_FILE, num_read_lines_daytime)
+        num_read_lines_manager += read_messages_from_file(
+    message_history, PUBLIC_MANAGER_CHAT_FILE, num_read_lines_manager)
         if player.is_mafia:  # only mafia can see what happens during nighttime
             num_read_lines_nighttime += read_messages_from_file(
                 message_history, PUBLIC_NIGHTTIME_CHAT_FILE, num_read_lines_nighttime)
@@ -135,6 +137,7 @@ def main():
             get_vote_from_llm(player, message_history)
             while is_time_to_vote(game_dir):
                 continue  # wait for voting time to end when all players have voted
+            continue # don't immediately generate a message after voting
         add_message_to_game(player, message_history)
     end_game()
 
