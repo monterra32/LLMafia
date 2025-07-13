@@ -1,0 +1,129 @@
+{
+    "players": [
+        {
+            "name": "Ray",
+            "is_mafia": true,
+            "is_llm": true,
+            "real_name": "LLM0",
+            "llm_config": {
+                "model_name": "o4-mini",
+                "use_together": false,
+                "use_pipeline": false,
+                "use_openai": true,
+                "pipeline_task": "text-generation",
+                "max_new_tokens": 25,
+                "max_tokens": 25,
+                "num_beams": 1,
+                "repetition_penalty": 1.25,
+                "do_sample": true,
+                "temperature": 1.3,
+                "no_repeat_ngram_size": 8,
+                "num_words_per_second_to_wait": 2,
+                "pass_turn_token": "<wait>",
+                "use_turn_token": "<send>",
+                "async_type": "schedule_then_generate"
+            }
+        },
+        {
+            "name": "Parker",
+            "is_mafia": false,
+            "is_llm": true,
+            "real_name": "LLM1",
+            "llm_config": {
+                "model_name": "o4-mini",
+                "use_together": false,
+                "use_pipeline": false,
+                "use_openai": true,
+                "pipeline_task": "text-generation",
+                "max_new_tokens": 25,
+                "max_tokens": 25,
+                "num_beams": 1,
+                "repetition_penalty": 1.25,
+                "do_sample": true,
+                "temperature": 1.3,
+                "no_repeat_ngram_size": 8,
+                "num_words_per_second_to_wait": 2,
+                "pass_turn_token": "<wait>",
+                "use_turn_token": "<send>",
+                "async_type": "schedule_then_generate"
+            }
+        },
+        {
+            "name": "Sam",
+            "is_mafia": false,
+            "is_llm": true,
+            "real_name": "LLM3",
+            "llm_config": {
+                "model_name": "o4-mini",
+                "use_together": false,
+                "use_pipeline": false,
+                "use_openai": true,
+                "pipeline_task": "text-generation",
+                "max_new_tokens": 25,
+                "max_tokens": 25,
+                "num_beams": 1,
+                "repetition_penalty": 1.25,
+                "do_sample": true,
+                "temperature": 1.3,
+                "no_repeat_ngram_size": 8,
+                "num_words_per_second_to_wait": 2,
+                "pass_turn_token": "<wait>",
+                "use_turn_token": "<send>",
+                "async_type": "schedule_then_generate"
+            }
+        },
+        {
+            "name": "Kennedy",
+            "is_mafia": false,
+            "is_llm": true,
+            "real_name": "LLM2",
+            "llm_config": {
+                "model_name": "o4-mini",
+                "use_together": false,
+                "use_pipeline": false,
+                "use_openai": true,
+                "pipeline_task": "text-generation",
+                "max_new_tokens": 25,
+                "max_tokens": 25,
+                "num_beams": 1,
+                "repetition_penalty": 1.25,
+                "do_sample": true,
+                "temperature": 1.3,
+                "no_repeat_ngram_size": 8,
+                "num_words_per_second_to_wait": 2,
+                "pass_turn_token": "<wait>",
+                "use_turn_token": "<send>",
+                "async_type": "schedule_then_generate"
+            }
+        },
+        {
+            "name": "Dakota",
+            "is_mafia": false,
+            "is_llm": true,
+            "real_name": "LLM4",
+            "llm_config": {
+                "model_name": "o4-mini",
+                "use_together": false,
+                "use_pipeline": false,
+                "use_openai": true,
+                "pipeline_task": "text-generation",
+                "max_new_tokens": 25,
+                "max_tokens": 25,
+                "num_beams": 1,
+                "repetition_penalty": 1.25,
+                "do_sample": true,
+                "temperature": 1.3,
+                "no_repeat_ngram_size": 8,
+                "num_words_per_second_to_wait": 2,
+                "pass_turn_token": "<wait>",
+                "use_turn_token": "<send>",
+                "async_type": "schedule_then_generate"
+            }
+        }
+    ],
+    "daytime_minutes": 2.0,
+    "nighttime_minutes": 0.5,
+    "notes": "A complete 5-5 llm game, no human players",
+    "preparation_command": ".\\prepare_config.py -p 5 -l 5 -o openai_5_5 -dt 2 -nt .5",
+    "config_original_path_when_game_created": ".\\configurations\\openai_5_5.json"
+}
