@@ -186,7 +186,8 @@ def format_message(name, message):
 
 
 def strip_special_chars(content):
-    return re.search(r"^[^a-zA-Z0-9]*(.*?)[^a-zA-Z0-9]*$", content).group(1)
+    processedStr = re.search(r"^[^a-zA-Z0-9]*(.*?)[^a-zA-Z0-9]*$", content)
+    return processedStr.group(1) if processedStr else content
 
 
 def get_role_string(is_mafia):
