@@ -55,7 +55,7 @@ class LLMPlayer(ABC):
                         system_info += f"{player} ( {player_role} ) \n"
         if attention_to_not_repeat:
             # system_info += "Note: Do not repeat any messages already present in the message history below!\n"
-            system_info += "IMPORTANT RULES FOR RESPONSES:\n" \
+            """ system_info += "IMPORTANT RULES FOR RESPONSES:\n" \
                            "1. Never repeat the exact messages you've said before! " \
                            "(as detailed bellow)\n" \
                            "2. Your response must be different in both wording and meaning " \
@@ -65,7 +65,7 @@ class LLMPlayer(ABC):
                            "4. Don't use comma or other punctuation marks.\n" \
                            "5. Focus on adding new information or reactions " \
                            "to the current situation.\n" \
-                           "6. Don't start messages with common phrases you've used before.\n"
+                           "6. Don't start messages with common phrases you've used before.\n" """
             previous_messages = (self.game_dir / PERSONAL_CHAT_FILE_FORMAT.format(self.name)
                                  ).read_text().splitlines()
             if previous_messages:

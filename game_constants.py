@@ -54,7 +54,8 @@ RULES_OF_THE_GAME = "In this game each player is secretly assigned a role, eithe
                     "players interact and vote to decide which bystander player they want to " \
                     "eliminate (bystanders aren't exposed to the mafia identities or " \
                     "interaction). The mafia's goal is to outnumber the bystanders, and the " \
-                    "bystanders' goal is to vote out all real mafia."
+                    "bystanders' goal is to vote out all real mafia. " \
+                    "No player should lie under any circumstances, no matter what their role is. "
 
 # formats for saving texts
 TIME_FORMAT_FOR_TIMESTAMP = "%H:%M:%S"
