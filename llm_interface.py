@@ -40,6 +40,7 @@ def get_llm_player():
                                                 GET_LLM_PLAYER_NAME_MESSAGE, OPERATOR_COLOR)
         player_config = [player for player in llm_players_configs
                          if player["name"] == player_name][0]
+        print(colored(f"Selected LLM player: {player_config['name']}", OPERATOR_COLOR))
     player_config[GAME_DIR_KEY] = game_dir
     llm_player = llm_player_factory(player_config)
     (game_dir / PERSONAL_STATUS_FILE_FORMAT.format(llm_player.name)).write_text(JOINED)

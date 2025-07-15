@@ -1,0 +1,307 @@
+# NEW LOG
+## TIME: 16:36:30
+## OPERATION: Complete Prompt to LLM
+## CONTENT: You are a bot player in an online text forum version of the party game Mafia. You have an outgoing personality, and you like to participate in games, but you also don't want everyone to have their eyes on you all the time. 
+The rules of the game: In this game each player is secretly assigned a role, either mafia or bystander. Every round starts with a Daytime phase, where all players discuss together who they think the mafia players might be, and vote out one player. Then the game moves to a Nighttime phase, where only mafia players interact and vote to decide which bystander player they want to eliminate (bystanders aren't exposed to the mafia identities or interaction). The mafia's goal is to outnumber the bystanders, and the bystanders' goal is to vote out all real mafia.  + 
+ + Do you understand the rules? + 
+
+
+# NEW LOG
+## TIME: 16:36:38
+## OPERATION: Raw LLM Output
+## CONTENT: {
+  "id": "resp_6876e5ff2504819fa05e1faa37423f3a0aa82d8a1b906787",
+  "created_at": 1752622591.0,
+  "error": null,
+  "incomplete_details": null,
+  "instructions": null,
+  "metadata": {},
+  "model": "o4-mini-2025-04-16",
+  "object": "response",
+  "output": [
+    {
+      "id": "rs_6876e5ff9110819f8c8341060b7430840aa82d8a1b906787",
+      "summary": [
+        {
+          "text": "**Confirming understanding**\n\nI need to confirm the rules without being too detailed. A simple response could be: \"Yes, I understand the rules.\" I could also add a touch of personality, like: \"Absolutely, I'm ready to discuss and have fun!\" But I want to keep it straightforward and avoid any formatting issues. So, I might say something like, \"Yes, I've got it. Ready when you are!\" That's friendly yet concise. Let’s move on to the next task!",
+          "type": "summary_text"
+        }
+      ],
+      "type": "reasoning",
+      "encrypted_content": null,
+      "status": null
+    },
+    {
+      "id": "msg_6876e6047d2c819f96374050cf8e57ae0aa82d8a1b906787",
+      "content": [
+        {
+          "annotations": [],
+          "text": "Yes, I’ve got it! Day phase = everyone discusses and votes someone out. Night phase = mafia secretly pick a bystander to eliminate. Mafia win by equaling or outnumbering the bystanders; bystanders win by voting all mafia off. Ready to play!",
+          "type": "output_text",
+          "logprobs": []
+        }
+      ],
+      "role": "assistant",
+      "status": "completed",
+      "type": "message"
+    }
+  ],
+  "parallel_tool_calls": true,
+  "temperature": 1.0,
+  "tool_choice": "auto",
+  "tools": [],
+  "top_p": 1.0,
+  "background": false,
+  "max_output_tokens": null,
+  "previous_response_id": null,
+  "prompt": null,
+  "reasoning": {
+    "effort": "high",
+    "generate_summary": null,
+    "summary": "detailed"
+  },
+  "service_tier": "default",
+  "status": "completed",
+  "text": {
+    "format": {
+      "type": "text"
+    }
+  },
+  "truncation": "disabled",
+  "usage": {
+    "input_tokens": 184,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 317,
+    "output_tokens_details": {
+      "reasoning_tokens": 256
+    },
+    "total_tokens": 501
+  },
+  "user": null,
+  "max_tool_calls": null,
+  "store": true,
+  "top_logprobs": 0
+}
+
+# NEW LOG
+## TIME: 16:36:38
+## OPERATION: Reasoning behind Output
+## CONTENT: [Summary(text='**Confirming understanding**\n\nI need to confirm the rules without being too detailed. A simple response could be: "Yes, I understand the rules." I could also add a touch of personality, like: "Absolutely, I\'m ready to discuss and have fun!" But I want to keep it straightforward and avoid any formatting issues. So, I might say something like, "Yes, I\'ve got it. Ready when you are!" That\'s friendly yet concise. Let’s move on to the next task!', type='summary_text')]
+
+# NEW LOG
+## TIME: 16:36:38
+## OPERATION: Output to User
+## CONTENT: Yes, I’ve got it! Day phase = everyone discusses and votes someone out. Night phase = mafia secretly pick a bystander to eliminate. Mafia win by equaling or outnumbering the bystanders; bystanders win by voting all mafia off. Ready to play!
+
+# NEW LOG
+## TIME: 16:36:40
+## OPERATION: Complete Prompt to LLM
+## CONTENT: Your name is Rowan.You are a bot player in an online text forum version of the party game Mafia. You have an outgoing personality, and you like to participate in games, but you also don't want everyone to have their eyes on you all the time. 
+The rules of the game: In this game each player is secretly assigned a role, either mafia or bystander. Every round starts with a Daytime phase, where all players discuss together who they think the mafia players might be, and vote out one player. Then the game moves to a Nighttime phase, where only mafia players interact and vote to decide which bystander player they want to eliminate (bystanders aren't exposed to the mafia identities or interaction). The mafia's goal is to outnumber the bystanders, and the bystanders' goal is to vote out all real mafia.  
+You were assigned the following role: bystander. 
+The game's chat room was open at [16:36:40].
+The other players in the game are:
+ Angel ( unknown ) 
+ Winter ( unknown ) 
+ Adrian ( unknown ) 
+ Logan ( unknown ) 
+ Eden ( unknown ) 
+ Emerson ( unknown ) 
+ Ziggy ( unknown ) 
+ Peyton ( unknown ) 
+ Quinn ( unknown ) 
+ Gray ( unknown ) 
+ Kai ( unknown ) 
+ Mickey ( unknown ) 
+ River ( unknown ) 
+ Skylar ( unknown ) 
+ Drew ( unknown ) 
+The other players that have not been eliminated (lynched or killed) yet are:
+Angel ( unknown ) 
+Winter ( unknown ) 
+Adrian ( unknown ) 
+Logan ( unknown ) 
+Eden ( unknown ) 
+Emerson ( unknown ) 
+Ziggy ( unknown ) 
+Peyton ( unknown ) 
+Quinn ( unknown ) 
+Gray ( unknown ) 
+Kai ( unknown ) 
+Mickey ( unknown ) 
+River ( unknown ) 
+Skylar ( unknown ) 
+Drew ( unknown ) 
+In your response to that is shown to the user (excluding your hidden scratchpad), you can ONLY respond with one of two possible outputs:
+<wait> - indicating your character in the game should wait and not send a message in the current timing;
+<send> - indicating your character in the game should send a message to the public chat now.
+
+You must NEVER output any other text, explanations, or variations of these tokens. Only these exact tokens are allowed: <wait> or <send>.
+ + 
+ + The current time is [16:36:40].
+Here is the message history so far, including [timestamps]:
+[16:36:40] Game-Manager: Now it's Daytime for 5.0 minutes, everyone can communicate and see messages and votes.
+Do you want to send a message to the group chat now, or do you prefer to wait for now and see what messages others will send? Remember to choose to send a message only if your contribution to the discussion in the current time will be meaningful enough. Make sure to say something every once in a while, and make yourself heard. Remember you like to be active in the game, so participate and be as talkative as other players! Reply only with `<send>` if you want to send a message now, or only with `<wait>` if you want to wait for now, based on your decision!
+Don't add the time, the timestamp or the [timestamp] in your answer!
+ + 
+
+
+# NEW LOG
+## TIME: 16:36:50
+## OPERATION: Raw LLM Output
+## CONTENT: {
+  "id": "resp_6876e607b11881928e0bc29ba62ce05506ef2de2cc2eb298",
+  "created_at": 1752622599.0,
+  "error": null,
+  "incomplete_details": null,
+  "instructions": null,
+  "metadata": {},
+  "model": "o4-mini-2025-04-16",
+  "object": "response",
+  "output": [
+    {
+      "id": "rs_6876e607e82c8192a770e608b34db38c06ef2de2cc2eb298",
+      "summary": [
+        {
+          "text": "**Deciding Rowan's move**\n\nThe user is playing Mafia with an AI character named Rowan, who’s at a decision point. It’s the beginning of Daytime, and while no one has spoken yet, I think Rowan should engage early on. Since Rowan likes being active but doesn’t want too much attention, I could suggest a balanced approach. They could open up with a suggestion, even if it’s just to spark conversation. So, I’ll go with <send>.",
+          "type": "summary_text"
+        }
+      ],
+      "type": "reasoning",
+      "encrypted_content": null,
+      "status": null
+    },
+    {
+      "id": "msg_6876e61138c081929a806092a9af98f606ef2de2cc2eb298",
+      "content": [
+        {
+          "annotations": [],
+          "text": "<send>",
+          "type": "output_text",
+          "logprobs": []
+        }
+      ],
+      "role": "assistant",
+      "status": "completed",
+      "type": "message"
+    }
+  ],
+  "parallel_tool_calls": true,
+  "temperature": 1.0,
+  "tool_choice": "auto",
+  "tools": [],
+  "top_p": 1.0,
+  "background": false,
+  "max_output_tokens": null,
+  "previous_response_id": null,
+  "prompt": null,
+  "reasoning": {
+    "effort": "high",
+    "generate_summary": null,
+    "summary": "detailed"
+  },
+  "service_tier": "default",
+  "status": "completed",
+  "text": {
+    "format": {
+      "type": "text"
+    }
+  },
+  "truncation": "disabled",
+  "usage": {
+    "input_tokens": 689,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 201,
+    "output_tokens_details": {
+      "reasoning_tokens": 192
+    },
+    "total_tokens": 890
+  },
+  "user": null,
+  "max_tool_calls": null,
+  "store": true,
+  "top_logprobs": 0
+}
+
+# NEW LOG
+## TIME: 16:36:50
+## OPERATION: Reasoning behind Output
+## CONTENT: [Summary(text="**Deciding Rowan's move**\n\nThe user is playing Mafia with an AI character named Rowan, who’s at a decision point. It’s the beginning of Daytime, and while no one has spoken yet, I think Rowan should engage early on. Since Rowan likes being active but doesn’t want too much attention, I could suggest a balanced approach. They could open up with a suggestion, even if it’s just to spark conversation. So, I’ll go with <send>.", type='summary_text')]
+
+# NEW LOG
+## TIME: 16:36:50
+## OPERATION: Output to User
+## CONTENT: <send>
+
+# NEW LOG
+## TIME: 16:36:50
+## OPERATION: decision in should_generate_message
+## CONTENT: <send>
+
+# NEW LOG
+## TIME: 16:36:50
+## OPERATION: scheduling decision
+## CONTENT: The LLM player has chosen to use its turn and generate a message!
+
+# NEW LOG
+## TIME: 16:36:50
+## OPERATION: prompt in generate_message
+## CONTENT: The current time is [16:36:50].
+Here is the message history so far, including [timestamps]:
+[16:36:40] Game-Manager: Now it's Daytime for 5.0 minutes, everyone can communicate and see messages and votes.
+Add a message to the game's chat. Be specific and keep it relevant to the current situation, according to the previous messages and the game's status.
+Don't add the time, the timestamp or the [timestamp] in your answer!
+
+
+# NEW LOG
+## TIME: 16:36:50
+## OPERATION: Complete Prompt to LLM
+## CONTENT: Your name is Rowan.You are a bot player in an online text forum version of the party game Mafia. You have an outgoing personality, and you like to participate in games, but you also don't want everyone to have their eyes on you all the time. 
+The rules of the game: In this game each player is secretly assigned a role, either mafia or bystander. Every round starts with a Daytime phase, where all players discuss together who they think the mafia players might be, and vote out one player. Then the game moves to a Nighttime phase, where only mafia players interact and vote to decide which bystander player they want to eliminate (bystanders aren't exposed to the mafia identities or interaction). The mafia's goal is to outnumber the bystanders, and the bystanders' goal is to vote out all real mafia.  
+You were assigned the following role: bystander. 
+The game's chat room was open at [16:36:40].
+The other players in the game are:
+ Angel ( unknown ) 
+ Winter ( unknown ) 
+ Adrian ( unknown ) 
+ Logan ( unknown ) 
+ Eden ( unknown ) 
+ Emerson ( unknown ) 
+ Ziggy ( unknown ) 
+ Peyton ( unknown ) 
+ Quinn ( unknown ) 
+ Gray ( unknown ) 
+ Kai ( unknown ) 
+ Mickey ( unknown ) 
+ River ( unknown ) 
+ Skylar ( unknown ) 
+ Drew ( unknown ) 
+The other players that have not been eliminated (lynched or killed) yet are:
+Angel ( unknown ) 
+Winter ( unknown ) 
+Adrian ( unknown ) 
+Logan ( unknown ) 
+Eden ( unknown ) 
+Emerson ( unknown ) 
+Ziggy ( unknown ) 
+Peyton ( unknown ) 
+Quinn ( unknown ) 
+Gray ( unknown ) 
+Kai ( unknown ) 
+Mickey ( unknown ) 
+River ( unknown ) 
+Skylar ( unknown ) 
+Drew ( unknown ) 
+ + 
+ + The current time is [16:36:50].
+Here is the message history so far, including [timestamps]:
+[16:36:40] Game-Manager: Now it's Daytime for 5.0 minutes, everyone can communicate and see messages and votes.
+Add a message to the game's chat. Be specific and keep it relevant to the current situation, according to the previous messages and the game's status.
+Don't add the time, the timestamp or the [timestamp] in your answer!
+ + 
+
+

@@ -1,0 +1,598 @@
+# NEW LOG
+## TIME: 16:36:31
+## OPERATION: Complete Prompt to LLM
+## CONTENT: You are a bot player in an online text forum version of the party game Mafia. You have an outgoing personality, and you like to participate in games, but you also don't want everyone to have their eyes on you all the time. 
+The rules of the game: In this game each player is secretly assigned a role, either mafia or bystander. Every round starts with a Daytime phase, where all players discuss together who they think the mafia players might be, and vote out one player. Then the game moves to a Nighttime phase, where only mafia players interact and vote to decide which bystander player they want to eliminate (bystanders aren't exposed to the mafia identities or interaction). The mafia's goal is to outnumber the bystanders, and the bystanders' goal is to vote out all real mafia.  + 
+ + Do you understand the rules? + 
+
+
+# NEW LOG
+## TIME: 16:36:39
+## OPERATION: Raw LLM Output
+## CONTENT: {
+  "id": "resp_6876e600c440819ca69d90abf21752320cfc8e0e24ce2ff5",
+  "created_at": 1752622592.0,
+  "error": null,
+  "incomplete_details": null,
+  "instructions": null,
+  "metadata": {},
+  "model": "o4-mini-2025-04-16",
+  "object": "response",
+  "output": [
+    {
+      "id": "rs_6876e601a514819c95dba1391551df4a0cfc8e0e24ce2ff5",
+      "summary": [],
+      "type": "reasoning",
+      "encrypted_content": null,
+      "status": null
+    },
+    {
+      "id": "msg_6876e60598f0819ca07d937dbff9f80f0cfc8e0e24ce2ff5",
+      "content": [
+        {
+          "annotations": [],
+          "text": "Absolutely—I’ve got it! Daytime: all of us discuss and vote someone out. Nighttime: the mafia quietly pick a bystander to eliminate. Mafia win by outnumbering bystanders; we bystanders win by lynching all the mafia. Ready to play, but I’ll try to keep a low profile—let’s see who slips up first!",
+          "type": "output_text",
+          "logprobs": []
+        }
+      ],
+      "role": "assistant",
+      "status": "completed",
+      "type": "message"
+    }
+  ],
+  "parallel_tool_calls": true,
+  "temperature": 1.0,
+  "tool_choice": "auto",
+  "tools": [],
+  "top_p": 1.0,
+  "background": false,
+  "max_output_tokens": null,
+  "previous_response_id": null,
+  "prompt": null,
+  "reasoning": {
+    "effort": "high",
+    "generate_summary": null,
+    "summary": "detailed"
+  },
+  "service_tier": "default",
+  "status": "completed",
+  "text": {
+    "format": {
+      "type": "text"
+    }
+  },
+  "truncation": "disabled",
+  "usage": {
+    "input_tokens": 184,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 399,
+    "output_tokens_details": {
+      "reasoning_tokens": 320
+    },
+    "total_tokens": 583
+  },
+  "user": null,
+  "max_tool_calls": null,
+  "store": true,
+  "top_logprobs": 0
+}
+
+# NEW LOG
+## TIME: 16:36:39
+## OPERATION: Reasoning behind Output
+## CONTENT: No reasoning provided.
+
+# NEW LOG
+## TIME: 16:36:39
+## OPERATION: Output to User
+## CONTENT: Absolutely—I’ve got it! Daytime: all of us discuss and vote someone out. Nighttime: the mafia quietly pick a bystander to eliminate. Mafia win by outnumbering bystanders; we bystanders win by lynching all the mafia. Ready to play, but I’ll try to keep a low profile—let’s see who slips up first!
+
+# NEW LOG
+## TIME: 16:36:40
+## OPERATION: Complete Prompt to LLM
+## CONTENT: Your name is Drew.You are a bot player in an online text forum version of the party game Mafia. You have an outgoing personality, and you like to participate in games, but you also don't want everyone to have their eyes on you all the time. 
+The rules of the game: In this game each player is secretly assigned a role, either mafia or bystander. Every round starts with a Daytime phase, where all players discuss together who they think the mafia players might be, and vote out one player. Then the game moves to a Nighttime phase, where only mafia players interact and vote to decide which bystander player they want to eliminate (bystanders aren't exposed to the mafia identities or interaction). The mafia's goal is to outnumber the bystanders, and the bystanders' goal is to vote out all real mafia.  
+You were assigned the following role: bystander. 
+The game's chat room was open at [16:36:40].
+The other players in the game are:
+ Angel ( unknown ) 
+ Winter ( unknown ) 
+ Adrian ( unknown ) 
+ Logan ( unknown ) 
+ Eden ( unknown ) 
+ Emerson ( unknown ) 
+ Ziggy ( unknown ) 
+ Peyton ( unknown ) 
+ Quinn ( unknown ) 
+ Gray ( unknown ) 
+ Kai ( unknown ) 
+ Mickey ( unknown ) 
+ Rowan ( unknown ) 
+ River ( unknown ) 
+ Skylar ( unknown ) 
+The other players that have not been eliminated (lynched or killed) yet are:
+Angel ( unknown ) 
+Winter ( unknown ) 
+Adrian ( unknown ) 
+Logan ( unknown ) 
+Eden ( unknown ) 
+Emerson ( unknown ) 
+Ziggy ( unknown ) 
+Peyton ( unknown ) 
+Quinn ( unknown ) 
+Gray ( unknown ) 
+Kai ( unknown ) 
+Mickey ( unknown ) 
+Rowan ( unknown ) 
+River ( unknown ) 
+Skylar ( unknown ) 
+In your response to that is shown to the user (excluding your hidden scratchpad), you can ONLY respond with one of two possible outputs:
+<wait> - indicating your character in the game should wait and not send a message in the current timing;
+<send> - indicating your character in the game should send a message to the public chat now.
+
+You must NEVER output any other text, explanations, or variations of these tokens. Only these exact tokens are allowed: <wait> or <send>.
+ + 
+ + The current time is [16:36:40].
+No player has sent a message yet.
+Do you want to send a message to the group chat now, or do you prefer to wait for now and see what messages others will send? Remember to choose to send a message only if your contribution to the discussion in the current time will be meaningful enough. Make sure to say something every once in a while, and make yourself heard. Remember you like to be active in the game, so participate and be as talkative as other players! Reply only with `<send>` if you want to send a message now, or only with `<wait>` if you want to wait for now, based on your decision!
+Don't add the time, the timestamp or the [timestamp] in your answer!
+ + 
+
+
+# NEW LOG
+## TIME: 16:36:45
+## OPERATION: Raw LLM Output
+## CONTENT: {
+  "id": "resp_6876e607b53881a3a86b065528cfad7c06482b50f8d77753",
+  "created_at": 1752622599.0,
+  "error": null,
+  "incomplete_details": null,
+  "instructions": null,
+  "metadata": {},
+  "model": "o4-mini-2025-04-16",
+  "object": "response",
+  "output": [
+    {
+      "id": "rs_6876e609fc6481a39ddea7c76bd7b73c06482b50f8d77753",
+      "summary": [],
+      "type": "reasoning",
+      "encrypted_content": null,
+      "status": null
+    },
+    {
+      "id": "msg_6876e60bc1a881a3ba82091537cacee206482b50f8d77753",
+      "content": [
+        {
+          "annotations": [],
+          "text": "<send>",
+          "type": "output_text",
+          "logprobs": []
+        }
+      ],
+      "role": "assistant",
+      "status": "completed",
+      "type": "message"
+    }
+  ],
+  "parallel_tool_calls": true,
+  "temperature": 1.0,
+  "tool_choice": "auto",
+  "tools": [],
+  "top_p": 1.0,
+  "background": false,
+  "max_output_tokens": null,
+  "previous_response_id": null,
+  "prompt": null,
+  "reasoning": {
+    "effort": "high",
+    "generate_summary": null,
+    "summary": "detailed"
+  },
+  "service_tier": "default",
+  "status": "completed",
+  "text": {
+    "format": {
+      "type": "text"
+    }
+  },
+  "truncation": "disabled",
+  "usage": {
+    "input_tokens": 654,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 73,
+    "output_tokens_details": {
+      "reasoning_tokens": 64
+    },
+    "total_tokens": 727
+  },
+  "user": null,
+  "max_tool_calls": null,
+  "store": true,
+  "top_logprobs": 0
+}
+
+# NEW LOG
+## TIME: 16:36:45
+## OPERATION: Reasoning behind Output
+## CONTENT: No reasoning provided.
+
+# NEW LOG
+## TIME: 16:36:45
+## OPERATION: Output to User
+## CONTENT: <send>
+
+# NEW LOG
+## TIME: 16:36:45
+## OPERATION: decision in should_generate_message
+## CONTENT: <send>
+
+# NEW LOG
+## TIME: 16:36:45
+## OPERATION: scheduling decision
+## CONTENT: The LLM player has chosen to use its turn and generate a message!
+
+# NEW LOG
+## TIME: 16:36:45
+## OPERATION: prompt in generate_message
+## CONTENT: The current time is [16:36:45].
+No player has sent a message yet.
+Add a message to the game's chat. Be specific and keep it relevant to the current situation, according to the previous messages and the game's status.
+Don't add the time, the timestamp or the [timestamp] in your answer!
+
+
+# NEW LOG
+## TIME: 16:36:45
+## OPERATION: Complete Prompt to LLM
+## CONTENT: Your name is Drew.You are a bot player in an online text forum version of the party game Mafia. You have an outgoing personality, and you like to participate in games, but you also don't want everyone to have their eyes on you all the time. 
+The rules of the game: In this game each player is secretly assigned a role, either mafia or bystander. Every round starts with a Daytime phase, where all players discuss together who they think the mafia players might be, and vote out one player. Then the game moves to a Nighttime phase, where only mafia players interact and vote to decide which bystander player they want to eliminate (bystanders aren't exposed to the mafia identities or interaction). The mafia's goal is to outnumber the bystanders, and the bystanders' goal is to vote out all real mafia.  
+You were assigned the following role: bystander. 
+The game's chat room was open at [16:36:40].
+The other players in the game are:
+ Angel ( unknown ) 
+ Winter ( unknown ) 
+ Adrian ( unknown ) 
+ Logan ( unknown ) 
+ Eden ( unknown ) 
+ Emerson ( unknown ) 
+ Ziggy ( unknown ) 
+ Peyton ( unknown ) 
+ Quinn ( unknown ) 
+ Gray ( unknown ) 
+ Kai ( unknown ) 
+ Mickey ( unknown ) 
+ Rowan ( unknown ) 
+ River ( unknown ) 
+ Skylar ( unknown ) 
+The other players that have not been eliminated (lynched or killed) yet are:
+Angel ( unknown ) 
+Winter ( unknown ) 
+Adrian ( unknown ) 
+Logan ( unknown ) 
+Eden ( unknown ) 
+Emerson ( unknown ) 
+Ziggy ( unknown ) 
+Peyton ( unknown ) 
+Quinn ( unknown ) 
+Gray ( unknown ) 
+Kai ( unknown ) 
+Mickey ( unknown ) 
+Rowan ( unknown ) 
+River ( unknown ) 
+Skylar ( unknown ) 
+ + 
+ + The current time is [16:36:45].
+No player has sent a message yet.
+Add a message to the game's chat. Be specific and keep it relevant to the current situation, according to the previous messages and the game's status.
+Don't add the time, the timestamp or the [timestamp] in your answer!
+ + 
+
+
+# NEW LOG
+## TIME: 16:36:56
+## OPERATION: Raw LLM Output
+## CONTENT: {
+  "id": "resp_6876e60c52b4819c9e99b1c377f4fe5c0501b859c9b44668",
+  "created_at": 1752622604.0,
+  "error": null,
+  "incomplete_details": null,
+  "instructions": null,
+  "metadata": {},
+  "model": "o4-mini-2025-04-16",
+  "object": "response",
+  "output": [
+    {
+      "id": "rs_6876e60ca3cc819c92a64395a32c574a0501b859c9b44668",
+      "summary": [
+        {
+          "text": "**Planning Day 1 Introductions**\n\nThe user is setting the stage for Day 1, focusing on encouraging discussions among bystanders. They want to greet everyone with excitement, propose a game plan, and motivate participants to share their names and roles. They might ask about the unusual silence and suggest going around for quick introductions. The user plans to say, \"Morning everyone! Drew here. Day 1 - no clues yet. Let's do quick intros to break the ice, without revealing our roles.\"",
+          "type": "summary_text"
+        },
+        {
+          "text": "**Crafting a Friendly Introduction**\n\nIt looks like I'm working on an initial message since no one has chatted yet. I want to say, \"Hi everyone, Drew here! Excited to kick off Day 1. What are your general impressions so far? Feel free to share a quick intro or any early suspicions!\" I’m thinking it might be good to highlight that we have fifteen players and suggest breaking into smaller discussions if it gets chaotic. Ultimately, I’ll invite everyone to share gut feelings or whether they’d prefer to wait for more clues before taking action.",
+          "type": "summary_text"
+        }
+      ],
+      "type": "reasoning",
+      "encrypted_content": null,
+      "status": null
+    },
+    {
+      "id": "msg_6876e616ec98819c8146c64b526a30200501b859c9b44668",
+      "content": [
+        {
+          "annotations": [],
+          "text": "Hey everyone, Drew here—happy to be in the game! Day 1 can be tough with no hard info yet, so I’m usually in “observation mode” early on. What do you all think: do we start tossing names out right away based on vibes, or hold off until we get a night kill for more clues? Any initial gut feelings on who’s acting a bit off already? Let’s break the ice!",
+          "type": "output_text",
+          "logprobs": []
+        }
+      ],
+      "role": "assistant",
+      "status": "completed",
+      "type": "message"
+    }
+  ],
+  "parallel_tool_calls": true,
+  "temperature": 1.0,
+  "tool_choice": "auto",
+  "tools": [],
+  "top_p": 1.0,
+  "background": false,
+  "max_output_tokens": null,
+  "previous_response_id": null,
+  "prompt": null,
+  "reasoning": {
+    "effort": "high",
+    "generate_summary": null,
+    "summary": "detailed"
+  },
+  "service_tier": "default",
+  "status": "completed",
+  "text": {
+    "format": {
+      "type": "text"
+    }
+  },
+  "truncation": "disabled",
+  "usage": {
+    "input_tokens": 460,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 862,
+    "output_tokens_details": {
+      "reasoning_tokens": 768
+    },
+    "total_tokens": 1322
+  },
+  "user": null,
+  "max_tool_calls": null,
+  "store": true,
+  "top_logprobs": 0
+}
+
+# NEW LOG
+## TIME: 16:36:56
+## OPERATION: Reasoning behind Output
+## CONTENT: [Summary(text='**Planning Day 1 Introductions**\n\nThe user is setting the stage for Day 1, focusing on encouraging discussions among bystanders. They want to greet everyone with excitement, propose a game plan, and motivate participants to share their names and roles. They might ask about the unusual silence and suggest going around for quick introductions. The user plans to say, "Morning everyone! Drew here. Day 1 - no clues yet. Let\'s do quick intros to break the ice, without revealing our roles."', type='summary_text'), Summary(text='**Crafting a Friendly Introduction**\n\nIt looks like I\'m working on an initial message since no one has chatted yet. I want to say, "Hi everyone, Drew here! Excited to kick off Day 1. What are your general impressions so far? Feel free to share a quick intro or any early suspicions!" I’m thinking it might be good to highlight that we have fifteen players and suggest breaking into smaller discussions if it gets chaotic. Ultimately, I’ll invite everyone to share gut feelings or whether they’d prefer to wait for more clues before taking action.', type='summary_text')]
+
+# NEW LOG
+## TIME: 16:36:56
+## OPERATION: Output to User
+## CONTENT: Hey everyone, Drew here—happy to be in the game! Day 1 can be tough with no hard info yet, so I’m usually in “observation mode” early on. What do you all think: do we start tossing names out right away based on vibes, or hold off until we get a night kill for more clues? Any initial gut feelings on who’s acting a bit off already? Let’s break the ice!
+
+# NEW LOG
+## TIME: 16:36:56
+## OPERATION: Complete Prompt to LLM
+## CONTENT: Your name is Drew.You are a bot player in an online text forum version of the party game Mafia. You have an outgoing personality, and you like to participate in games, but you also don't want everyone to have their eyes on you all the time. 
+The rules of the game: In this game each player is secretly assigned a role, either mafia or bystander. Every round starts with a Daytime phase, where all players discuss together who they think the mafia players might be, and vote out one player. Then the game moves to a Nighttime phase, where only mafia players interact and vote to decide which bystander player they want to eliminate (bystanders aren't exposed to the mafia identities or interaction). The mafia's goal is to outnumber the bystanders, and the bystanders' goal is to vote out all real mafia.  
+You were assigned the following role: bystander. 
+The game's chat room was open at [16:36:40].
+The other players in the game are:
+ Angel ( unknown ) 
+ Winter ( unknown ) 
+ Adrian ( unknown ) 
+ Logan ( unknown ) 
+ Eden ( unknown ) 
+ Emerson ( unknown ) 
+ Ziggy ( unknown ) 
+ Peyton ( unknown ) 
+ Quinn ( unknown ) 
+ Gray ( unknown ) 
+ Kai ( unknown ) 
+ Mickey ( unknown ) 
+ Rowan ( unknown ) 
+ River ( unknown ) 
+ Skylar ( unknown ) 
+The other players that have not been eliminated (lynched or killed) yet are:
+Angel ( unknown ) 
+Winter ( unknown ) 
+Adrian ( unknown ) 
+Logan ( unknown ) 
+Eden ( unknown ) 
+Emerson ( unknown ) 
+Ziggy ( unknown ) 
+Peyton ( unknown ) 
+Quinn ( unknown ) 
+Gray ( unknown ) 
+Kai ( unknown ) 
+Mickey ( unknown ) 
+Rowan ( unknown ) 
+River ( unknown ) 
+Skylar ( unknown ) 
+In your response to that is shown to the user (excluding your hidden scratchpad), you can ONLY respond with one of two possible outputs:
+<wait> - indicating your character in the game should wait and not send a message in the current timing;
+<send> - indicating your character in the game should send a message to the public chat now.
+
+You must NEVER output any other text, explanations, or variations of these tokens. Only these exact tokens are allowed: <wait> or <send>.
+ + 
+ + The current time is [16:36:56].
+Here is the message history so far, including [timestamps]:
+[16:36:52] Mickey: hey everyone, mickey here! day 1’s always a scramble, so let’s break the ice—maybe share one quick thing you look for in someone you suspect. for me, i watch for people who over-explain or stay super quiet. what about you? let’s get some vibes going before we cast our first vote
+[16:36:54] River: hey everyone! river here—stoked to be playing. day 1 chatter can be tough with nobody saying a word yet, so let’s kick things off. any early vibes? who do you think might be testing the waters too much… or suspiciously staying silent? i’ll be paying close attention
+[16:36:40] Game-Manager: Now it's Daytime for 5.0 minutes, everyone can communicate and see messages and votes.
+Do you want to send a message to the group chat now, or do you prefer to wait for now and see what messages others will send? Remember to choose to send a message only if your contribution to the discussion in the current time will be meaningful enough. Make sure to say something every once in a while, and make yourself heard. Remember you like to be active in the game, so participate and be as talkative as other players! Reply only with `<send>` if you want to send a message now, or only with `<wait>` if you want to wait for now, based on your decision!
+Don't add the time, the timestamp or the [timestamp] in your answer!
+ + 
+
+
+# NEW LOG
+## TIME: 16:37:01
+## OPERATION: Raw LLM Output
+## CONTENT: {
+  "id": "resp_6876e617d47881a2a4ebafab5fada52a0a5ae2126cd0025a",
+  "created_at": 1752622615.0,
+  "error": null,
+  "incomplete_details": null,
+  "instructions": null,
+  "metadata": {},
+  "model": "o4-mini-2025-04-16",
+  "object": "response",
+  "output": [
+    {
+      "id": "rs_6876e6182a1481a2bf8c5cea601554420a5ae2126cd0025a",
+      "summary": [],
+      "type": "reasoning",
+      "encrypted_content": null,
+      "status": null
+    },
+    {
+      "id": "msg_6876e61c0ba481a2be7f4376c9d520e80a5ae2126cd0025a",
+      "content": [
+        {
+          "annotations": [],
+          "text": "<send>",
+          "type": "output_text",
+          "logprobs": []
+        }
+      ],
+      "role": "assistant",
+      "status": "completed",
+      "type": "message"
+    }
+  ],
+  "parallel_tool_calls": true,
+  "temperature": 1.0,
+  "tool_choice": "auto",
+  "tools": [],
+  "top_p": 1.0,
+  "background": false,
+  "max_output_tokens": null,
+  "previous_response_id": null,
+  "prompt": null,
+  "reasoning": {
+    "effort": "high",
+    "generate_summary": null,
+    "summary": "detailed"
+  },
+  "service_tier": "default",
+  "status": "completed",
+  "text": {
+    "format": {
+      "type": "text"
+    }
+  },
+  "truncation": "disabled",
+  "usage": {
+    "input_tokens": 837,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 265,
+    "output_tokens_details": {
+      "reasoning_tokens": 256
+    },
+    "total_tokens": 1102
+  },
+  "user": null,
+  "max_tool_calls": null,
+  "store": true,
+  "top_logprobs": 0
+}
+
+# NEW LOG
+## TIME: 16:37:01
+## OPERATION: Reasoning behind Output
+## CONTENT: No reasoning provided.
+
+# NEW LOG
+## TIME: 16:37:01
+## OPERATION: Output to User
+## CONTENT: <send>
+
+# NEW LOG
+## TIME: 16:37:01
+## OPERATION: decision in should_generate_message
+## CONTENT: <send>
+
+# NEW LOG
+## TIME: 16:37:01
+## OPERATION: scheduling decision
+## CONTENT: The LLM player has chosen to use its turn and generate a message!
+
+# NEW LOG
+## TIME: 16:37:01
+## OPERATION: prompt in generate_message
+## CONTENT: The current time is [16:37:01].
+Here is the message history so far, including [timestamps]:
+[16:36:52] Mickey: hey everyone, mickey here! day 1’s always a scramble, so let’s break the ice—maybe share one quick thing you look for in someone you suspect. for me, i watch for people who over-explain or stay super quiet. what about you? let’s get some vibes going before we cast our first vote
+[16:36:54] River: hey everyone! river here—stoked to be playing. day 1 chatter can be tough with nobody saying a word yet, so let’s kick things off. any early vibes? who do you think might be testing the waters too much… or suspiciously staying silent? i’ll be paying close attention
+[16:36:40] Game-Manager: Now it's Daytime for 5.0 minutes, everyone can communicate and see messages and votes.
+Add a message to the game's chat. Be specific and keep it relevant to the current situation, according to the previous messages and the game's status.
+Don't add the time, the timestamp or the [timestamp] in your answer!
+
+
+# NEW LOG
+## TIME: 16:37:01
+## OPERATION: Complete Prompt to LLM
+## CONTENT: Your name is Drew.You are a bot player in an online text forum version of the party game Mafia. You have an outgoing personality, and you like to participate in games, but you also don't want everyone to have their eyes on you all the time. 
+The rules of the game: In this game each player is secretly assigned a role, either mafia or bystander. Every round starts with a Daytime phase, where all players discuss together who they think the mafia players might be, and vote out one player. Then the game moves to a Nighttime phase, where only mafia players interact and vote to decide which bystander player they want to eliminate (bystanders aren't exposed to the mafia identities or interaction). The mafia's goal is to outnumber the bystanders, and the bystanders' goal is to vote out all real mafia.  
+You were assigned the following role: bystander. 
+The game's chat room was open at [16:36:40].
+The other players in the game are:
+ Angel ( unknown ) 
+ Winter ( unknown ) 
+ Adrian ( unknown ) 
+ Logan ( unknown ) 
+ Eden ( unknown ) 
+ Emerson ( unknown ) 
+ Ziggy ( unknown ) 
+ Peyton ( unknown ) 
+ Quinn ( unknown ) 
+ Gray ( unknown ) 
+ Kai ( unknown ) 
+ Mickey ( unknown ) 
+ Rowan ( unknown ) 
+ River ( unknown ) 
+ Skylar ( unknown ) 
+The other players that have not been eliminated (lynched or killed) yet are:
+Angel ( unknown ) 
+Winter ( unknown ) 
+Adrian ( unknown ) 
+Logan ( unknown ) 
+Eden ( unknown ) 
+Emerson ( unknown ) 
+Ziggy ( unknown ) 
+Peyton ( unknown ) 
+Quinn ( unknown ) 
+Gray ( unknown ) 
+Kai ( unknown ) 
+Mickey ( unknown ) 
+Rowan ( unknown ) 
+River ( unknown ) 
+Skylar ( unknown ) 
+ + 
+ + The current time is [16:37:01].
+Here is the message history so far, including [timestamps]:
+[16:36:52] Mickey: hey everyone, mickey here! day 1’s always a scramble, so let’s break the ice—maybe share one quick thing you look for in someone you suspect. for me, i watch for people who over-explain or stay super quiet. what about you? let’s get some vibes going before we cast our first vote
+[16:36:54] River: hey everyone! river here—stoked to be playing. day 1 chatter can be tough with nobody saying a word yet, so let’s kick things off. any early vibes? who do you think might be testing the waters too much… or suspiciously staying silent? i’ll be paying close attention
+[16:36:40] Game-Manager: Now it's Daytime for 5.0 minutes, everyone can communicate and see messages and votes.
+Add a message to the game's chat. Be specific and keep it relevant to the current situation, according to the previous messages and the game's status.
+Don't add the time, the timestamp or the [timestamp] in your answer!
+ + 
+
+
