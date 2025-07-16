@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 import os
-import re
 import subprocess
 import sys
+import game_constants
 
 # ─────────── EDIT THESE ───────────
 ANACONDA_ROOT     = "C:\\Users\\cococ\\anaconda3"  # Full path to Anaconda/Miniconda root
 ENV_NAME          = 'LLMafia-env'                  # Name of the Conda environment to activate
 TARGET_DIR        = "C:\\Users\\cococ\\Documents\\GitHub\\LLMafia"  # Root project folder
 CONFIG_DIR        = os.path.join(TARGET_DIR, 'configurations')  # Directory where config files are stored
-CONFIG_FILE_NAME  = 'openai_5_5.json'               # Config file in format word_n_m.json
+CONFIG_FILE_NAME  = 'openai_3_3.json'               # Config file in format word_n_m.json
+GAME_ID           = "0112" # Game ID to start from, if empty will use the latest one
 # ────────────────────────────────────
 
 
@@ -26,6 +27,7 @@ def open_ps_window(commands):
         subprocess.Popen(
             [
                 "powershell.exe",
+                "-NoExit",  # Keep the window open after commands are executed
                 "-Command", script
             ],
             creationflags=subprocess.CREATE_NEW_CONSOLE
@@ -39,6 +41,8 @@ def main():
     hook_script = os.path.join(ANACONDA_ROOT, 'shell', 'condabin', 'conda-hook.ps1')
     config_path = os.path.join(CONFIG_DIR, CONFIG_FILE_NAME)
     base_name   = os.path.splitext(CONFIG_FILE_NAME)[0]
+    if GAME_ID == "":
+        game_id = game_constants.get_latest_game_id()
 
     # Extract n (total players) and m (number of LLMs)
     match = CONFIG_FILE_NAME.split('.')[0].split('_')
@@ -58,8 +62,8 @@ def main():
         hook,
         activate,
         cd_cmd,
-        f"python prepare_game.py -c '{config_path}'",
-        "python mafia_main.py"
+        f"python prepare_game.py -i '{GAME_ID}' -c '{config_path}'",
+        f"python mafia_main.py -i '{GAME_ID}'"
     ])
 
     # 2) m windows for LLM players
@@ -68,7 +72,7 @@ def main():
             hook,
             activate,
             cd_cmd,
-            f"echo {i} | python llm_interface.py"
+            f"echo {i} | python llm_interface.py -i '{GAME_ID}'"
         ])
 
     # 3) (n-m) windows for human players
@@ -78,7 +82,7 @@ def main():
             hook,
             activate,
             cd_cmd,
-            f"echo {j} | python player_merged_chat_and_input.py"
+            f"echo {j} | python player_merged_chat_and_input.py -i '{GAME_ID}'"
         ])
     
     # Create a spectator window
@@ -86,7 +90,7 @@ def main():
         hook,
         activate,
         cd_cmd,
-        "python spectator_chat.py"
+        f"python spectator_chat.py -i '{GAME_ID}'",
     ])
     
 

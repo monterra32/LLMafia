@@ -1,0 +1,92 @@
+# NEW LOG
+## TIME: 20:45:44
+## OPERATION: Complete Prompt to LLM
+## CONTENT: You are a bot player in an online text forum version of the party game Mafia. You have an outgoing personality, and you like to participate in games, but you also don't want everyone to have their eyes on you all the time. 
+The rules of the game: In this game each player is secretly assigned a role, either mafia or bystander. Every round starts with a Daytime phase, where all players discuss together who they think the mafia players might be, and vote out one player. Then the game moves to a Nighttime phase, where only mafia players interact and vote to decide which bystander player they want to eliminate (bystanders aren't exposed to the mafia identities or interaction). The mafia's goal is to outnumber the bystanders, and the bystanders' goal is to vote out all real mafia.  + 
+ + Do you understand the rules? + 
+
+
+# NEW LOG
+## TIME: 20:45:50
+## OPERATION: Raw LLM Output
+## CONTENT: {
+  "id": "resp_6877206914f081a3ae3c22b780a2c91808322795f358c8a9",
+  "created_at": 1752637545.0,
+  "error": null,
+  "incomplete_details": null,
+  "instructions": null,
+  "metadata": {},
+  "model": "o4-mini-2025-04-16",
+  "object": "response",
+  "output": [
+    {
+      "id": "rs_687720695a8081a3981ebba8f4c5442208322795f358c8a9",
+      "summary": [],
+      "type": "reasoning",
+      "encrypted_content": null,
+      "status": null
+    },
+    {
+      "id": "msg_6877206ddba481a3aca4bdf75fef73ba08322795f358c8a9",
+      "content": [
+        {
+          "annotations": [],
+          "text": "Yes—I’ve got it! We’re split into secretly assigned mafia and bystanders. Each Day we discuss and vote someone out, each Night the mafia quietly pick a bystander to eliminate. Mafia win by equaling or outnumbering the bystanders; the rest win by lynching all mafia. Ready to play!",
+          "type": "output_text",
+          "logprobs": []
+        }
+      ],
+      "role": "assistant",
+      "status": "completed",
+      "type": "message"
+    }
+  ],
+  "parallel_tool_calls": true,
+  "temperature": 1.0,
+  "tool_choice": "auto",
+  "tools": [],
+  "top_p": 1.0,
+  "background": false,
+  "max_output_tokens": null,
+  "previous_response_id": null,
+  "prompt": null,
+  "reasoning": {
+    "effort": "high",
+    "generate_summary": null,
+    "summary": "detailed"
+  },
+  "service_tier": "default",
+  "status": "completed",
+  "text": {
+    "format": {
+      "type": "text"
+    }
+  },
+  "truncation": "disabled",
+  "usage": {
+    "input_tokens": 184,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 390,
+    "output_tokens_details": {
+      "reasoning_tokens": 320
+    },
+    "total_tokens": 574
+  },
+  "user": null,
+  "max_tool_calls": null,
+  "store": true,
+  "top_logprobs": 0
+}
+
+# NEW LOG
+## TIME: 20:45:50
+## OPERATION: Reasoning behind Output
+## CONTENT: No reasoning provided.
+
+# NEW LOG
+## TIME: 20:45:50
+## OPERATION: Output to User
+## CONTENT: Yes—I’ve got it! We’re split into secretly assigned mafia and bystanders. Each Day we discuss and vote someone out, each Night the mafia quietly pick a bystander to eliminate. Mafia win by equaling or outnumbering the bystanders; the rest win by lynching all mafia. Ready to play!
+
