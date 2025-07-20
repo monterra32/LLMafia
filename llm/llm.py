@@ -410,7 +410,12 @@ def create_llm(logger, **llm_config):
     if llm_config.get(USE_TOGETHER_KEY):
         return TogetherLLM(logger, **llm_config)
     if llm_config.get(USE_OPENAI_KEY):
-        return OpenAI_4o(logger, **llm_config)
+        if llm_config.get("model_name") == "o4-mini":
+            return OpenAI_o4_mini(logger, **llm_config)
+        elif llm_config.get("model_name") == "gpt-4o":
+            return OpenAI_4o(logger, **llm_config)
+        else:
+            return OpenAI_4o(logger, **llm_config)
     if llm_config.get(USE_PIPELINE_KEY):
         # return LLM.PipelineLLM(logger, **llm_config)
         raise NotImplementedError("Pipeline LLM is not implemented yet.")
