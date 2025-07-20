@@ -43,8 +43,7 @@ from game_constants import DEFAULT_CONFIG_DIR, DEFAULT_NUM_PLAYERS, DEFAULT_NUM_
     MINIMUM_NUM_PLAYERS_FOR_ONE_MAFIA, MINIMUM_NUM_PLAYERS_FOR_MULT_MAFIA, OPTIONAL_CODE_NAMES, \
     WARNING_LIMIT_NUM_MAFIA, PLAYERS_KEY_IN_CONFIG, DEFAULT_DAYTIME_MINUTES, \
     DEFAULT_NIGHTTIME_MINUTES, DAYTIME_MINUTES_KEY, NIGHTTIME_MINUTES_KEY
-from llm_players.llm_constants import INT_CONFIG_KEYS, FLOAT_CONFIG_KEYS, DEFAULT_LLM_CONFIG, \
-    LLM_CONFIG_KEYS_OPTIONS, BOOL_CONFIG_KEYS, OPENAI_LLM_CONFIG
+from llm_players.llm_constants import *
 
 LLM_CONFIG_KEYS_INDEXED_OPTIONS = {
     key: {f"{i}": option for (i, option) in enumerate(options)}
@@ -147,7 +146,7 @@ def get_llm_config(llm_numbered_symbol, args):
         with open(args.llm_config_json_path, "r") as f:
             llm_config = json.load(f)
     else:
-        llm_config = OPENAI_LLM_CONFIG.copy()  # pay attention it is shallow copy of primitives
+        llm_config = OPENAI_4o_CONFIG.copy()  # pay attention it is shallow copy of primitives
     if args.change_llm_config:
         config_approved = False
         index2key = {f"{i}": key for i, key in enumerate(llm_config.keys())}

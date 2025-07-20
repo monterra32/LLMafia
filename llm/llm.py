@@ -274,7 +274,7 @@ class OpenAI_4o(LLM):
             for k in OPENAI_GENERATION_PARAMETERS
             if k in self.llm_config
         }
-        self.generation_parameters[MAX_TOKENS_KEY] = self.llm_config.get(MAX_TOKENS_KEY, 25)
+        # self.generation_parameters[MAX_TOKENS_KEY] = self.llm_config.get(MAX_TOKENS_KEY, 25)
    
     def _call_llm(self, messages):
         output = None
@@ -410,7 +410,7 @@ def create_llm(logger, **llm_config):
     if llm_config.get(USE_TOGETHER_KEY):
         return TogetherLLM(logger, **llm_config)
     if llm_config.get(USE_OPENAI_KEY):
-        return OpenAI_o4_mini(logger, **llm_config)
+        return OpenAI_4o(logger, **llm_config)
     if llm_config.get(USE_PIPELINE_KEY):
         # return LLM.PipelineLLM(logger, **llm_config)
         raise NotImplementedError("Pipeline LLM is not implemented yet.")

@@ -33,8 +33,8 @@ def main():
         "-c",
         "--config_file_name",
         type=str,
-        default="openai_5_5.json",
-        help="Configuration file name to use for the game setup",
+        default=".\\configurations\\openai_5_5.json",
+        help="path/to/configuration/file.json to use for the game setup, assumed LLMafia folder is root (./)",
     )
     p.add_argument(
         "-n",
@@ -54,7 +54,7 @@ def main():
 
     # Assign vars and print the starting parameters
     starting_id = args.initial_game_id.zfill(4)
-    config_file = args.config_file_name
+    config_file = args.config_file_name.split("configurations\\")[1]
     num_games = args.num_games
     concurrent_games = args.concurrent_games
     print(
