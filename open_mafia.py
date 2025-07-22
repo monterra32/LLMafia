@@ -29,7 +29,7 @@ def open_ps_window(commands):
         subprocess.Popen(
             [
                 "powershell.exe",
-                "-NoExit",  # Keep the window open after commands are executed
+                # "-NoExit",  # Keep the window open after commands are executed
                 "-Command",
                 script,
             ],
