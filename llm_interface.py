@@ -167,22 +167,22 @@ def main():
         if is_voted_out(player.name, game_dir):
             eliminate(player)
             break
-        if is_time_to_vote(game_dir) and (
-            player.is_mafia or not is_nighttime(game_dir)
-        ):
+        if is_time_to_vote(game_dir):
             isNighttime = is_nighttime(game_dir)
             if isNighttime:
                 if player.is_mafia:
                     player.logger.log(
+                        "Voting Status",
                         "Nighttime voting started, waiting for the mafia to vote."
                     )
                     get_vote_from_llm(player, message_history)
-                    while is_time_to_vote(game_dir):
+                    while is_time_to_vote(game_dir) and isNighttime == is_nighttime:
                         continue  # wait for voting time to end when all players have voted
                 else:
-                    continue
+                    continue # non-mafia players don't vote at night
             else:
                 player.logger.log(
+                    "Voting Status",
                     "Daytime voting started, waiting for the villagers to vote."
                 )
                 get_vote_from_llm(player, message_history)

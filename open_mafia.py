@@ -12,7 +12,7 @@ CONFIG_DIR = os.path.join(
     TARGET_DIR, "configurations"
 )  # Directory where config files are stored
 CONFIG_FILE_NAME = "openai_3_3.json"  # Config file in format word_n_m.json
-GAME_ID = "0112"  # Game ID to start from, if empty will use the latest one
+GAME_ID = ""  # Game ID to start from, if empty will use the latest one
 # ────────────────────────────────────
 
 
@@ -29,7 +29,7 @@ def open_ps_window(commands):
         subprocess.Popen(
             [
                 "powershell.exe",
-                # "-NoExit",  # Keep the window open after commands are executed
+                "-NoExit",  # Keep the window open after commands are executed
                 "-Command",
                 script,
             ],
@@ -45,7 +45,7 @@ def main(config=CONFIG_FILE_NAME, game_id=GAME_ID):
     config_path = os.path.join(CONFIG_DIR, config)
     base_name = os.path.splitext(config)[0]
     if GAME_ID == "":
-        game_id = game_constants.get_latest_game_id() # This is a padded number that is a string
+        game_id = str(int(game_constants.get_latest_game_id())+1).zfill(4) # This is a padded number that is a string
 
     # Extract n (total players) and m (number of LLMs)
     match = config.split(".")[0].split("_")
