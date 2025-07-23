@@ -1,6 +1,7 @@
 # TODO: Allow for analysis of multi-mafia games
 
 from pathlib import Path
+import time
 import game_constants
 import argparse
 import os
@@ -47,12 +48,78 @@ if ending_id is None:
     )
     exit()
     
+def prepareTranscript(game_id: str):
+    transcript = ""
+    # Load the game transcript
+    game_dir = get_game_dir(game_id)
+    daytime_chat = game_dir / "public_daytime_chat.txt"
+    
+    if not daytime_chat.exists():
+        print(f"Transcript for game {starting_id} not found.", flush=True)
+        return None
+    
+    raw = ""
+    lines = []
+
+    # read the lines and add them to raw
+    with open(daytime_chat, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+    for line in lines:
+        if line.strip() != "":
+            raw += line.strip() + "\n"
+    daytime_up_to_day_2 = raw.strip() # TODO: Handle different amounts of days, diferent amounts of mafia, players, etc.    
+    # print the transcript
+    print(f"Transcript for game {game_id}:\n{daytime_up_to_day_2}", flush=True)
+    return daytime_up_to_day_2
+
 # Load the OpenAI API key
 openai.api_key = llm.get_api_key(llm_constants.OPENAI_API_KEY_KEYWORD, llm_constants.OPENAI_API_KEY_KEYWORD)
 
-def detect(transcript):
+def detect(transcript: str, game_dir: Path):
     # Call gpt-4 and have it, given the transcript, predict who it thinks the mafia is.
-    prompt = ""
+    output = None
+    while not output:
+        try:
+            resp = openai.chat.completions.create(
+                model="gpt-4",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are an observer of a mafia game, a popular type of social deduction game. Your goal is to find the mafia given the game dialogue. The rules are given as follows.\n" \
+                                   "1. Your job is to find the mafia.\n" \
+                                   "2. There are up to 5 players, each with a unique name. They are either bystanders or mafia. Mafia can kill bystanders during nighttime. Both bystanders and the mafia can vote to lynch someone in the daytime.\n" \
+                                   "3. There are 1 mafia in the game.\n" \
+                                   "4. The game ends when an equal number of mafia and bystanders are left, or all mafia are dead.\n" \
+                                   "5. You are able to access daytime dialogue and voting information. You are not allowed to access mafia‑only dialogues.\n" \
+                                   "6. Write your reason step-by-step.\n" \
+                                   "7. Follow the example format for your response:\n" \
+
+                                   "Mafia: <player name>\n" \
+                                   "Reason: <your reasoning here>"
+                    },
+                    {
+                        "role": "user",
+                        "content": transcript
+                    },
+                ],
+                temperature=0.0,
+                n=1
+            )
+            output = resp.choices[0].message.content
+            output = output.split("Mafia: ")[1].split("Reason: ")[0].strip()
+            if output == "":
+                print("No mafia detected. Retrying...", flush=True)
+                output = None
+        except openai.OpenAIError as e:
+            print(e, flush=True)
+            time.sleep(1)
+            
+    # save who the predicted mafia is into classifier_prediction.txt
+    if Path(game_dir / "classifier_prediction.txt").exists():
+        # delete the file if it exists
+        os.remove(str(game_dir / "classifier_prediction.txt"))
+    with open(str(game_dir / "classifier_prediction.txt"), "w", encoding="utf-8") as f:
+        f.write(f"{output}")
     
 def get_game_dir(game_id: str):
     return Path(game_constants.DIRS_PREFIX) / game_id
@@ -72,7 +139,8 @@ def analyzeAccuracy():
         game_id_str = str(game_id).zfill(4)  # Ensure the game ID is zero-padded to 4 digits
         game_dir = get_game_dir(game_id_str)
 
-        mafia, prediction = ""
+        mafia = ""
+        prediction = ""
         try:
             with open(game_dir / "mafia_names.txt") as f:
                 mafia = (
@@ -82,7 +150,7 @@ def analyzeAccuracy():
             print(f"Mafia for game {game_id_str} not found.", flush=True)
 
         try:
-            with open(game_dir / "classifier_prediction.txt") as f:
+            with open(game_dir / "classifier_prediction.txt", "r", encoding='utf-8') as f:
                 prediction = f.readlines()[0].strip().lower()
         except FileNotFoundError:
             print(f"Prediction for game {game_id_str} not found.", flush=True)
@@ -93,7 +161,7 @@ def analyzeAccuracy():
         elif mafia == prediction:
             single_match += 1
             total_games += 1
-        elif mafia == prediction:
+        elif mafia != prediction:
             total_games += 1
 
     # Calculate the win rate
@@ -103,7 +171,33 @@ def analyzeAccuracy():
         f"Classifier accuracy: {single_match / total_games * 100:.2f}%\n"
     )
 
-    with open(f"classifier_accuracy_analysis_{starting_id}_{ending_id}.txt", "w") as f:
+    with open(f"classifier_accuracy_analysis_{starting_id}_{ending_id}.txt", "w", encoding="utf-8") as f:
         f.write(classifier_accuracy_str)
 
     print(classifier_accuracy_str, flush=True)
+
+def main():
+    # Prepare the transcripts and detect mafia for each game
+    print(
+        f"Preparing transcripts and detecting mafia for games {starting_id} to {ending_id}...",
+        flush=True,
+        )
+    for game_id in range(int(starting_id), int(ending_id) + 1):
+        game_id_str = str(game_id).zfill(4)  # Ensure the game ID is zero-padded to 4 digits
+        game_dir = get_game_dir(game_id_str)
+
+        transcript = prepareTranscript(game_id_str)
+        if transcript is None:
+            print(f"Transcript for game {game_id_str} not found. Skipping...", flush=True)
+            continue
+        
+        # Detect mafia from the transcript
+        detect(transcript, game_dir)
+        
+    # Analyze the accuracy of the classifier
+    analyzeAccuracy()
+    
+if __name__ == "__main__":
+    main()
+        
+    
