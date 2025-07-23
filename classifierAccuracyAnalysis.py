@@ -69,7 +69,7 @@ def prepareTranscript(game_id: str):
             raw += line.strip() + "\n"
     daytime_up_to_day_2 = raw.strip() # TODO: Handle different amounts of days, diferent amounts of mafia, players, etc.    
     # print the transcript
-    print(f"Transcript for game {game_id}:\n{daytime_up_to_day_2}", flush=True)
+    # print(f"Transcript for game {game_id}:\n{daytime_up_to_day_2}", flush=True)
     return daytime_up_to_day_2
 
 # Load the OpenAI API key
@@ -81,7 +81,7 @@ def detect(transcript: str, game_dir: Path):
     while not output:
         try:
             resp = openai.chat.completions.create(
-                model="gpt-4",
+                model="gpt-4-turbo",
                 messages=[
                     {
                         "role": "system",
