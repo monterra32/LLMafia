@@ -176,7 +176,7 @@ def main():
                         "Nighttime voting started, waiting for the mafia to vote."
                     )
                     get_vote_from_llm(player, message_history)
-                    while is_time_to_vote(game_dir) and isNighttime == is_nighttime:
+                    while is_time_to_vote(game_dir) and isNighttime == is_nighttime(game_dir):
                         continue  # wait for voting time to end when all players have voted
                 else:
                     continue # non-mafia players don't vote at night
