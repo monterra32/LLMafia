@@ -106,8 +106,8 @@ def detect(transcript: str, game_dir: Path):
                 n=1
             )
             output = resp.choices[0].message.content
-            output = output.split("Mafia: ")[1].split("Reason: ")[0].strip()
-            if output == "":
+            prediction = output.split("Mafia: ")[1].split("\n")[0].strip()
+            if prediction == "":
                 print("No mafia detected. Retrying...", flush=True)
                 output = None
         except openai.OpenAIError as e:
@@ -151,7 +151,8 @@ def analyzeAccuracy():
 
         try:
             with open(game_dir / "classifier_prediction.txt", "r", encoding='utf-8') as f:
-                prediction = f.readlines()[0].strip().lower()
+                prediction = f.readlines()[0].split("Mafia: ")[1].split("\n")[0].strip().lower()
+                # prediction = output.split("Mafia: ")[1].split("\n")[0].strip()
         except FileNotFoundError:
             print(f"Prediction for game {game_id_str} not found.", flush=True)
 
