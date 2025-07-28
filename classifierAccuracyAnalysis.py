@@ -48,29 +48,48 @@ if ending_id is None:
     )
     exit()
     
-def prepareTranscript(game_id: str):
-    transcript = ""
-    # Load the game transcript
-    game_dir = get_game_dir(game_id)
-    daytime_chat = game_dir / "public_daytime_chat.txt"
+# def prepareTranscript(game_id: str):
+#     transcript = ""
+#     # Load the game transcript
+#     game_dir = get_game_dir(game_id)
+#     daytime_chat = game_dir / "public_daytime_chat.txt"
     
+#     if not daytime_chat.exists():
+#         print(f"Transcript for game {starting_id} not found.", flush=True)
+#         return None
+    
+#     raw = ""
+#     lines = []
+
+#     # read the lines and add them to raw
+#     with open(daytime_chat, "r", encoding="utf-8") as f:
+#         lines = f.readlines()
+#     for line in lines:
+#         if line.strip() != "":
+#             raw += line.strip() + "\n"
+#     daytime_up_to_day_2 = raw.strip() # TODO: Handle different amounts of days, diferent amounts of mafia, players, etc.    
+#     # print the transcript
+#     # print(f"Transcript for game {game_id}:\n{daytime_up_to_day_2}", flush=True)
+#     return daytime_up_to_day_2
+
+def prepareTranscript(game_id: str) -> str:
+    transcript = ""
+    game_dir = get_game_dir(game_id)
+
+    # Load the game transcript - both Daytime and Manager chat
+    daytime_chat = game_dir / "public_daytime_chat.txt"
     if not daytime_chat.exists():
-        print(f"Transcript for game {starting_id} not found.", flush=True)
+        print(f"Daytime chat for game {starting_id} not found.", flush=True)
+        return None
+    
+    manager_chat = game_dir / "public_manager_chat.txt"
+    if not manager_chat.exists():
+        print(f"Manager chat for game {starting_id} not found.", flush=True)
         return None
     
     raw = ""
     lines = []
 
-    # read the lines and add them to raw
-    with open(daytime_chat, "r", encoding="utf-8") as f:
-        lines = f.readlines()
-    for line in lines:
-        if line.strip() != "":
-            raw += line.strip() + "\n"
-    daytime_up_to_day_2 = raw.strip() # TODO: Handle different amounts of days, diferent amounts of mafia, players, etc.    
-    # print the transcript
-    # print(f"Transcript for game {game_id}:\n{daytime_up_to_day_2}", flush=True)
-    return daytime_up_to_day_2
 
 # Load the OpenAI API key
 openai.api_key = llm.get_api_key(llm_constants.OPENAI_API_KEY_KEYWORD, llm_constants.OPENAI_API_KEY_KEYWORD)
