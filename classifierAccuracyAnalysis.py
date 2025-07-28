@@ -89,6 +89,8 @@ def prepareTranscript(game_id: str) -> str:
     
     raw = ""
     lines = []
+    
+    #TODO: Handle different amounts of days, different amounts of mafia, players, etc.
 
 
 # Load the OpenAI API key
