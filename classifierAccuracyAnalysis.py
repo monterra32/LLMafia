@@ -72,19 +72,25 @@ if ending_id is None:
 #     # print(f"Transcript for game {game_id}:\n{daytime_up_to_day_2}", flush=True)
 #     return daytime_up_to_day_2
 
+
 def indexOf(list: list, substring: str) -> int:
-    '''
+    """
     Returns the index of the first occurrence of a substring in a list of strings.
     if the substring is not found, returns -1.
-    '''
+    """
     for i, item in enumerate(list):
         if substring in item:
             return i
     return -1
 
 
-def prepareTranscript(game_id: str) -> str:
-    transcript = ""
+def prepareTranscript(game_id: str) -> list[str]:
+    """
+    Prepares a list of transcripts for a given game ID.
+    The list contains the chat transcripts for each day up to the specified day.
+    The lenght of the list is equal to the number of days in the game.
+    """
+    transcript: list[str] = []
     game_dir = get_game_dir(game_id)
 
     # Load the game transcript - both Daytime and Manager chat
@@ -98,39 +104,68 @@ def prepareTranscript(game_id: str) -> str:
         print(f"Manager chat for game {starting_id} not found.", flush=True)
         return None
 
-    # TODO: Handle different amounts of days, different amounts of mafia, players, etc.
-    daytimeList = [str]
-    daytimeDays = [[str]]
-    
-    managerList = [str]
-    managerDays = [[str]]
+    daytimeList: list[str] = []
+    daytimeDays: list[list[str]] = []
+
+    managerList: list[str] = []
+    managerDays: list[list[str]] = []
 
     with open(daytime_chat, "r", encoding="utf-8") as f:
         daytimeList = f.readlines()
 
-    while len(daytimeList) > 1: # While there are still lines in the daytime chat; the transcript has one empty newline at the end of the document.
+    while (
+        len(daytimeList) > 1
+    ):  # While there are still lines in the daytime chat; the transcript has one empty newline at the end of the document.
         # Parse the daytime chat into multiple days; the key phrase is the last vote of the day
         key = "Daytime has ended, now it's time to vote! Waiting for all players to vote..."  # The following lines are the votes of the different players.
-        firstVoteIndex = indexOf(daytime_chat, key) + 1
+        firstVoteIndex = indexOf(daytimeList, key) + 1
         lastVoteIndex = firstVoteIndex
-        while "voted for" in daytimeList[lastVoteIndex +1] and "Game-Manager" in daytimeList[lastVoteIndex+1]: # find the index of the final vote of the day
+        while (
+            # check if daytimeList[lastVoteIndex + 1] is not out of bounds
+            lastVoteIndex + 1 < len(daytimeList)
+            and "voted for" in daytimeList[lastVoteIndex + 1]
+            and "Game-Manager" in daytimeList[lastVoteIndex + 1]
+        ):  # find the index of the final vote of the day
             lastVoteIndex += 1
-        daytimeDays.append(daytimeList[0:lastVoteIndex + 1]) # Add the day to the list of days
-        del daytimeList[0:lastVoteIndex + 1] # Remove the day from the list of lines
+        daytimeDays.append(
+            daytimeList[0 : lastVoteIndex + 1]
+        )  # Add the day to the list of days
+        del daytimeList[0 : lastVoteIndex + 1]  # Remove the day from the list of lines
 
     with open(manager_chat, "r", encoding="utf-8") as f:
         managerList = f.readlines()
 
-    while len(managerList) > 1: # While there are still lines in the daytime chat; the transcript has one empty newline at the end of the document.
+    while (
+        len(managerList) > 1
+    ):  # While there are still lines in the daytime chat; the transcript has one empty newline at the end of the document.
         # Parse the daytime chat into multiple days; the key phrase is the last vote of the day
         daytimeLynchKey = "Now it's Daytime for"  # The following lines are the results of the daytime lynch and nighttime kill.
-        daytimeLynchIndex = indexOf(manager_chat, daytimeLynchKey) + 1
+        daytimeLynchIndex = indexOf(managerList, daytimeLynchKey) + 1
         nighttimeKillKey = "Now it's Nighttime for"
-        nighttimeKillIndex = indexOf(manager_chat, nighttimeKillKey) + 1
-        managerDays.append(managerList[0:nighttimeKillIndex + 1]) # Add the day to the list of days
-        del managerList[0:nighttimeKillIndex + 1] # Remove the day from the list of lines
-        
-    # TODO: Combine the daytime and manager days into a single transcript
+        nighttimeKillIndex = indexOf(managerList, nighttimeKillKey) + 2
+        managerDays.append(
+            managerList[0 : nighttimeKillIndex + 1]
+        )  # Add the day to the list of days
+        del managerList[
+            0 : nighttimeKillIndex + 1
+        ]  # Remove the day from the list of lines
+
+    # TODO: Combine the daytime and manager days into a single transcript, then add that to the list of transcripts
+    for day in range(1, len(daytimeDays) + 1):
+        for i in range(0, day):
+            # Combine the daytime and manager chat for each day up to the specified day (inclusive)
+            if i < len(daytimeDays) and i < len(managerDays):
+                subTrasncript = (
+                    managerDays[i][0] # Now it's Daytime...
+                    + "\n"
+                    + "".join(daytimeDays[i]) # The daytime chat for the day
+                    + "\n"
+                    + "".join(managerDays[i][1:]) # Result of lynch and kill
+                    + "\n"
+                )
+                transcript.append(subTrasncript.strip())
+    
+    return transcript
 
 # Load the OpenAI API key
 openai.api_key = llm.get_api_key(
