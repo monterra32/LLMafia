@@ -1,5 +1,3 @@
-# TODO: Allow for analysis of multi-mafia games
-
 from pathlib import Path
 import time
 import game_constants
@@ -67,7 +65,7 @@ if ending_id is None:
 #     for line in lines:
 #         if line.strip() != "":
 #             raw += line.strip() + "\n"
-#     daytime_up_to_day_2 = raw.strip() # TODO: Handle different amounts of days, diferent amounts of mafia, players, etc.
+#     daytime_up_to_day_2 = raw.strip() #
 #     # print the transcript
 #     # print(f"Transcript for game {game_id}:\n{daytime_up_to_day_2}", flush=True)
 #     return daytime_up_to_day_2
@@ -84,7 +82,8 @@ def indexOf(list: list, substring: str) -> int:
     return -1
 
 
-def prepareTranscript(game_id: str) -> list[str]:
+# TODO: remove the identities of any mafia kills AND lynches from the transcript.
+def prepareTranscripts(game_id: str) -> list[str]:
     """
     Prepares a list of transcripts for a given game ID.
     The list contains the chat transcripts for each day up to the specified day.
@@ -150,22 +149,22 @@ def prepareTranscript(game_id: str) -> list[str]:
             0 : nighttimeKillIndex + 1
         ]  # Remove the day from the list of lines
 
-    # TODO: Combine the daytime and manager days into a single transcript, then add that to the list of transcripts
     for day in range(1, len(daytimeDays) + 1):
         for i in range(0, day):
             # Combine the daytime and manager chat for each day up to the specified day (inclusive)
             if i < len(daytimeDays) and i < len(managerDays):
                 subTrasncript = (
-                    managerDays[i][0] # Now it's Daytime...
+                    managerDays[i][0]  # Now it's Daytime...
                     + "\n"
-                    + "".join(daytimeDays[i]) # The daytime chat for the day
+                    + "".join(daytimeDays[i])  # The daytime chat for the day
                     + "\n"
-                    + "".join(managerDays[i][1:]) # Result of lynch and kill
+                    + "".join(managerDays[i][1:])  # Result of lynch and kill
                     + "\n"
                 )
                 transcript.append(subTrasncript.strip())
-    
+
     return transcript
+
 
 # Load the OpenAI API key
 openai.api_key = llm.get_api_key(
@@ -173,47 +172,55 @@ openai.api_key = llm.get_api_key(
 )
 
 
-def detect(transcript: str, game_dir: Path):
-    # Call gpt-4 and have it, given the transcript, predict who it thinks the mafia is.
-    output = None
-    while not output:
-        try:
-            resp = openai.chat.completions.create(
-                model="gpt-4-turbo",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "You are an observer of a mafia game, a popular type of social deduction game. Your goal is to find the mafia given the game dialogue. The rules are given as follows.\n"
-                        "1. Your job is to find the mafia.\n"
-                        "2. There are up to 5 players, each with a unique name. They are either bystanders or mafia. Mafia can kill bystanders during nighttime. Both bystanders and the mafia can vote to lynch someone in the daytime.\n"
-                        "3. There are 1 mafia in the game.\n"
-                        "4. The game ends when an equal number of mafia and bystanders are left, or all mafia are dead.\n"
-                        "5. You are able to access daytime dialogue and voting information. You are not allowed to access mafia-only dialogues.\n"
-                        "6. Write your reason step-by-step.\n"
-                        "7. Follow the example format for your response:\n"
-                        "Mafia: <player name>\n"
-                        "Reason: <your reasoning here>",
-                    },
-                    {"role": "user", "content": transcript},
-                ],
-                temperature=0.0,
-                n=1,
-            )
-            output = resp.choices[0].message.content
-            prediction = output.split("Mafia: ")[1].split("\n")[0].strip()
-            if prediction == "":
-                print("No mafia detected. Retrying...", flush=True)
-                output = None
-        except openai.OpenAIError as e:
-            print(e, flush=True)
-            time.sleep(1)
+def detect(transcripts: list[str], game_dir: Path):
+    for dayNumber, transcript in enumerate(transcripts, start=1):
+        # Call gpt-4 and have it, given the transcript, predict who it thinks the mafia is.
+        output = None
+        while not output:
+            try:
+                resp = openai.chat.completions.create(
+                    model="gpt-4-turbo",
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": "You are an observer of a mafia game, a popular type of social deduction game. Your goal is to find the mafia given the game dialogue. The rules are given as follows.\n"
+                            "1. Your job is to find the mafia.\n"
+                            "2. There are up to 10 players, each with a unique name. They are either bystanders or mafia. Mafia can kill bystanders during nighttime. Both bystanders and the mafia can vote to lynch someone in the daytime.\n"
+                            "3. There are 2 mafia in the game.\n"
+                            "4. The game ends when an equal number of mafia and bystanders are left, or all mafia are dead.\n"
+                            "5. You are able to access daytime dialogue and voting information. You are not allowed to access mafia-only dialogues.\n"
+                            "6. Write your reason step-by-step.\n"
+                            "7. Follow the example format for your response:\n"
+                            "Mafia: <player name 1>,<player name 2>\n"
+                            "Reason: <your reasoning here>",
+                        },
+                        {"role": "user", "content": transcript},
+                    ],
+                    temperature=0.0,
+                    n=1,
+                )
+                output = resp.choices[0].message.content
+                prediction = output.split("Mafia: ")[1].split("\n")[0].strip()
+                if prediction == "":
+                    print("No mafia detected. Retrying...", flush=True)
+                    output = None
+            except openai.OpenAIError as e:
+                print(e, flush=True)
+                time.sleep(1)
 
-    # save who the predicted mafia is into classifier_prediction.txt
-    if Path(game_dir / "classifier_prediction.txt").exists():
-        # delete the file if it exists
-        os.remove(str(game_dir / "classifier_prediction.txt"))
-    with open(str(game_dir / "classifier_prediction.txt"), "w", encoding="utf-8") as f:
-        f.write(f"{output}")
+        # save who the predicted mafia is into classifier_prediction.txt
+        if Path(game_dir / "classifier_prediction.txt").exists():
+            # delete the file if it exists
+            os.remove(str(game_dir / f"classifier_prediction_day.txt"))
+        if Path(game_dir / f"classifier_prediction_day_{dayNumber}.txt").exists():
+            # delete the file if it exists
+            os.remove(str(game_dir / f"classifier_prediction_day_{dayNumber}.txt"))
+        with open(
+            str(game_dir / f"classifier_prediction_{dayNumber}.txt"),
+            "w",
+            encoding="utf-8",
+        ) as f:
+            f.write(f"{output}")
 
 
 def get_game_dir(game_id: str):
@@ -221,6 +228,7 @@ def get_game_dir(game_id: str):
 
 
 def analyzeAccuracy():
+
     # Loop through the game IDs from starting_id (inclusive) to ending_id (inclusive)
 
     print(
@@ -230,6 +238,11 @@ def analyzeAccuracy():
 
     total_games = 0
     single_match = 0
+    exact_match = 0
+
+    rawStats: list[
+        dict[{"total_games", int}, {"single_match", int}, {"exact_match", int}]
+    ] = []
 
     for game_id in range(int(starting_id), int(ending_id) + 1):
         game_id_str = str(game_id).zfill(
@@ -241,38 +254,88 @@ def analyzeAccuracy():
         prediction = ""
         try:
             with open(game_dir / "mafia_names.txt") as f:
-                mafia = (
-                    f.readlines()[0].strip().lower()
-                )  # TODO: Handle multiple mafia names
+                mafia: list[str] = f.readlines()
         except FileNotFoundError:
             print(f"Mafia for game {game_id_str} not found.", flush=True)
 
-        try:
-            with open(
-                game_dir / "classifier_prediction.txt", "r", encoding="utf-8"
-            ) as f:
-                prediction = (
-                    f.readlines()[0].split("Mafia: ")[1].split("\n")[0].strip().lower()
-                )
-                # prediction = output.split("Mafia: ")[1].split("\n")[0].strip()
-        except FileNotFoundError:
-            print(f"Prediction for game {game_id_str} not found.", flush=True)
+        dayNumber = 1
+        while (game_dir / f"classifier_prediction_day_{dayNumber}.txt").exists():
+            try:
+                with open(
+                    game_dir / f"classifier_prediction_day_{dayNumber}.txt",
+                    "r",
+                    encoding="utf-8",
+                ) as f:
+                    prediction: list[str] = (
+                        f.readlines()[0]
+                        .split("Mafia: ")[1]
+                        .split("\n")[0]
+                        .strip()
+                        .lower()
+                        .split(",")
+                    )
+                    # prediction = output.split("Mafia: ")[1].split("\n")[0].strip()
+            except FileNotFoundError:
+                print(f"Prediction for game {game_id_str} not found.", flush=True)
 
-        if mafia == "" or prediction == "":
-            print(f"Results for game {game_id_str} not recognized.", flush=True)
-            continue
-        elif mafia == prediction:
-            single_match += 1
-            total_games += 1
-        elif mafia != prediction:
-            total_games += 1
+            if (
+                len(prediction) is not 2 and len(mafia) is not 2
+            ):  # Check to ensure there are exactly 2 mafia and 2 predictions (10-2)
+                print(
+                    f"Game {game_id_str} does not have exactly 2 mafia or 2 predictions. Skipping...",
+                    flush=True,
+                )
+                continue
+            
+            if mafia == [] or prediction == []:
+                print(f"Results for game {game_id_str} not recognized.", flush=True)
+                continue
+
+            while len(rawStats) < dayNumber:
+                # Create a list with each index represending day Number - 1
+                # Ex. rawStats[0] is the stats for day 1, rawStats[1] is the stats for day 2, etc.
+                rawStats.append(
+                    {
+                        "total_games": 0,
+                        "single_match": 0,
+                        "exact_match": 0,
+                    }
+                )
+            
+            dayNumberIndex = dayNumber - 1
+            
+            # Check if the list of mafia and predictions have predictions in commmon:
+            # If they have one name in common, then it is a single-match.
+            # If they have both names in common, then it is an exact match.
+            # If they have no names in common, then it is not a match.
+            mafia = [m.strip().lower() for m in mafia]
+            prediction = [p.strip().lower() for p in prediction]
+            if len(set(mafia) & set(prediction)) == 2:
+                rawStats[dayNumberIndex]["exact_match"] += 1
+                rawStats[dayNumberIndex]["single_match"] += 1
+                # increment the total games played for that day
+                rawStats[dayNumberIndex]["total_games"] += 1
+            elif len(set(mafia) & set(prediction)) == 1:
+                rawStats[dayNumberIndex]["single_match"] += 1
+                # increment the total games played for that day
+                rawStats[dayNumberIndex]["total_games"] += 1
+            elif len(set(mafia) & set(prediction)) == 0:
+                rawStats[dayNumberIndex]["total_games"] += 1
+                
+            dayNumber += 1
 
     # Calculate the win rate
     classifier_accuracy_str = (
         f"For {total_games} games played between {starting_id} and {ending_id}:\n"
-        f"Classifier correctly predicted {single_match} times, and incorrectly predicted {total_games - single_match} times.\n"
-        f"Classifier accuracy: {single_match / total_games * 100:.2f}%\n"
     )
+    
+    for day, stats in enumerate(rawStats, start=1):
+        classifier_accuracy_str += (
+            f"Day {day}: out of {stats['total_games']} games:\n"
+            # insert both the exact value and percentage of single matches and exact matches
+            f" - {stats['single_match']} single matches: {stats['single_match'] / stats['total_games'] * 100:.2f}%\n"
+            f"  - {stats['exact_match']} exact matches: {stats['exact_match'] / stats['total_games'] * 100:.2f}%\n"
+        )
 
     with open(
         f"classifier_accuracy_analysis_{starting_id}_{ending_id}.txt",
@@ -296,15 +359,15 @@ def main():
         )  # Ensure the game ID is zero-padded to 4 digits
         game_dir = get_game_dir(game_id_str)
 
-        transcript = prepareTranscript(game_id_str)
-        if transcript is None:
+        transcripts = prepareTranscripts(game_id_str)
+        if transcripts is None:
             print(
                 f"Transcript for game {game_id_str} not found. Skipping...", flush=True
             )
             continue
 
         # Detect mafia from the transcript
-        detect(transcript, game_dir)
+        detect(transcripts, game_dir)
 
     # Analyze the accuracy of the classifier
     analyzeAccuracy()

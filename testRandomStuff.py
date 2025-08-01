@@ -1,5 +1,13 @@
-import classifierAccuracyAnalysis
+# import classifierAccuracyAnalysis
 
-transcripts = classifierAccuracyAnalysis.prepareTranscript("0140")
-for transcript in transcripts:
-    print(transcript + "\n" + "BIG BREAK")
+
+rawStats: list[dict[{"total_games", int}, {"single_match", int}, {"exact_match", int}]] = []
+rawStats.append()
+print(rawStats)
+
+
+
+
+# transcripts = classifierAccuracyAnalysis.prepareTranscripts("0140")
+# for transcript in transcripts:
+    # print(transcript + "\n" + "BIG BREAK")
