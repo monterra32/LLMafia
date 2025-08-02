@@ -83,6 +83,7 @@ def indexOf(list: list, substring: str) -> int:
 
 
 def prepareTranscripts(game_id: str) -> list[str]:
+    print(f"Preparing transcripts for game {game_id}...", flush=True)
     """
     Prepares a list of transcripts for a given game ID.
     The list contains the chat transcripts for each day up to the specified day.
@@ -137,18 +138,29 @@ def prepareTranscripts(game_id: str) -> list[str]:
         len(managerList) > 1
     ):  # While there are still lines in the daytime chat; the transcript has one empty newline at the end of the document.
         # Parse the daytime chat into multiple days; the key phrase is the last vote of the day
+        # Remove the oneMafiaLeft message if it exists
         daytimeLynchKey = "Now it's Daytime for"  # The following lines are the results of the daytime lynch and nighttime kill.
         daytimeLynchIndex = indexOf(managerList, daytimeLynchKey) + 1
+        managerList[daytimeLynchIndex] = managerList[daytimeLynchIndex].split("Their role was")[0].strip()
+
         nighttimeKillKey = "Now it's Nighttime for"
         nighttimeKillIndex = indexOf(managerList, nighttimeKillKey) + 1
-        # Remove the identity of the players who were lynched or killed
-        managerList[daytimeLynchIndex] = managerList[daytimeLynchIndex].split("Their role was")[0].strip()
-        # Change verbage from voted out to killed in the night
-        noVoteSplitList = managerList[nighttimeKillIndex].split("voted out")
-        managerList[nighttimeKillIndex] = (
-            noVoteSplitList[0] + "killed in the night" + noVoteSplitList[1]
-        )
-        managerList[nighttimeKillIndex] = managerList[nighttimeKillIndex].split("Their role was")[0].strip()
+        
+        if (nighttimeKillIndex != 0):
+            if "There is only one mafia member left" in managerList[nighttimeKillIndex]:
+                nighttimeKillIndex += 1  # Skip the "There is only one mafia member left" message
+
+            # Remove the identity of the players who were lynched or killed
+            print("nightline", managerList[nighttimeKillIndex], flush=True)
+            # Change verbage from voted out to killed in the night
+            noVoteSplitList = managerList[nighttimeKillIndex].split("voted out")
+            managerList[nighttimeKillIndex] = (
+                noVoteSplitList[0] + "killed in the night" + noVoteSplitList[1]
+            )
+            managerList[nighttimeKillIndex] = managerList[nighttimeKillIndex].split("Their role was")[0].strip()
+        elif nighttimeKillIndex == 0: # Transcript ends with a daytime lynch  
+            nighttimeKillIndex = daytimeLynchIndex
+            
         managerDays.append(
             managerList[0 : nighttimeKillIndex + 1]
         )  # Add the day to the list of days

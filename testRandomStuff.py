@@ -8,6 +8,6 @@ import classifierAccuracyAnalysis
 
 
 
-transcripts = classifierAccuracyAnalysis.prepareTranscripts("0665")
+transcripts = classifierAccuracyAnalysis.prepareTranscripts("0631")
 for transcript in transcripts:
     print(transcript + "\n" + "BIG BREAK")
