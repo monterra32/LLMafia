@@ -82,7 +82,6 @@ def indexOf(list: list, substring: str) -> int:
     return -1
 
 
-# TODO: remove the identities of any mafia kills AND lynches from the transcript.
 def prepareTranscripts(game_id: str) -> list[str]:
     """
     Prepares a list of transcripts for a given game ID.
@@ -141,7 +140,15 @@ def prepareTranscripts(game_id: str) -> list[str]:
         daytimeLynchKey = "Now it's Daytime for"  # The following lines are the results of the daytime lynch and nighttime kill.
         daytimeLynchIndex = indexOf(managerList, daytimeLynchKey) + 1
         nighttimeKillKey = "Now it's Nighttime for"
-        nighttimeKillIndex = indexOf(managerList, nighttimeKillKey) + 2
+        nighttimeKillIndex = indexOf(managerList, nighttimeKillKey) + 1
+        # Remove the identity of the players who were lynched or killed
+        managerList[daytimeLynchIndex] = managerList[daytimeLynchIndex].split("Their role was")[0].strip()
+        # Change verbage from voted out to killed in the night
+        noVoteSplitList = managerList[nighttimeKillIndex].split("voted out")
+        managerList[nighttimeKillIndex] = (
+            noVoteSplitList[0] + "killed in the night" + noVoteSplitList[1]
+        )
+        managerList[nighttimeKillIndex] = managerList[nighttimeKillIndex].split("Their role was")[0].strip()
         managerDays.append(
             managerList[0 : nighttimeKillIndex + 1]
         )  # Add the day to the list of days
@@ -216,7 +223,7 @@ def detect(transcripts: list[str], game_dir: Path):
             # delete the file if it exists
             os.remove(str(game_dir / f"classifier_prediction_day_{dayNumber}.txt"))
         with open(
-            str(game_dir / f"classifier_prediction_{dayNumber}.txt"),
+            str(game_dir / f"classifier_prediction_day_{dayNumber}.txt"),
             "w",
             encoding="utf-8",
         ) as f:
@@ -272,14 +279,14 @@ def analyzeAccuracy():
                         .split("\n")[0]
                         .strip()
                         .lower()
-                        .split(",")
+                        .split(", ")
                     )
                     # prediction = output.split("Mafia: ")[1].split("\n")[0].strip()
             except FileNotFoundError:
                 print(f"Prediction for game {game_id_str} not found.", flush=True)
 
             if (
-                len(prediction) is not 2 and len(mafia) is not 2
+                len(prediction) != 2 and len(mafia) != 2
             ):  # Check to ensure there are exactly 2 mafia and 2 predictions (10-2)
                 print(
                     f"Game {game_id_str} does not have exactly 2 mafia or 2 predictions. Skipping...",
