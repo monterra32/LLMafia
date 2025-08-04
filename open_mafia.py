@@ -11,7 +11,7 @@ TARGET_DIR = "C:\\Users\\cococ\\Documents\\GitHub\\LLMafia"  # Root project fold
 CONFIG_DIR = os.path.join(
     TARGET_DIR, "configurations"
 )  # Directory where config files are stored
-CONFIG_FILE_NAME = "openai_3_3.json"  # Config file in format word_n_m.json
+CONFIG_FILE_NAME = "humanMafia_5_1.json"  # Config file in format word_n_m.json
 GAME_ID = ""  # Game ID to start from, if empty will use the latest one
 # ────────────────────────────────────
 
@@ -29,7 +29,7 @@ def open_ps_window(commands):
         subprocess.Popen(
             [
                 "powershell.exe",
-                # "-NoExit",  # Keep the window open after commands are executed
+                "-NoExit",  # Keep the window open after commands are executed
                 "-Command",
                 script,
             ],
@@ -90,7 +90,15 @@ def main(config=CONFIG_FILE_NAME, game_id=GAME_ID):
                 hook,
                 activate,
                 cd_cmd,
-                f"echo {j} | python player_merged_chat_and_input.py -i '{game_id}'",
+                f"echo {j} | python player_input.py -i '{game_id}'",
+            ]
+        )
+        open_ps_window(
+            [
+                hook,
+                activate,
+                cd_cmd,
+                f"echo {j} | python player_chat.py -i '{game_id}'",
             ]
         )
 
