@@ -151,7 +151,7 @@ def prepareTranscripts(game_id: str) -> list[str]:
                 nighttimeKillIndex += 1  # Skip the "There is only one mafia member left" message
 
             # Remove the identity of the players who were lynched or killed
-            print("nightline", managerList[nighttimeKillIndex], flush=True)
+            # print("nightline", managerList[nighttimeKillIndex], flush=True)
             # Change verbage from voted out to killed in the night
             noVoteSplitList = managerList[nighttimeKillIndex].split("voted out")
             managerList[nighttimeKillIndex] = (
