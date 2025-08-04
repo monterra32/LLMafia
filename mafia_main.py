@@ -241,7 +241,7 @@ def wait_for_players(players):
         for player in havent_joined_yet:
             if bool(player.personal_status_file.read_text()):  # file isn't empty once joined
                 joined.append(player)
-                print(f"{player.name} has joined!")
+                print(f"{player.name} has joined!", flush=True)
         for player in joined:
             havent_joined_yet.remove(player)
     (game_dir / GAME_START_TIME_FILE).write_text(get_current_timestamp())
