@@ -86,7 +86,7 @@ class ScheduleThenGeneratePlayer(LLMPlayer):
         task = f"Add a message to the game's chat. " \
                f"Be specific and keep it relevant to the current situation, " \
                f"according to the previous messages and the game's status. " \
-               f"Your message should only be one short sentence! " \
+            #    f"Your message should only be one short sentence! " \
             #    f"Don't add a message that you've already added (in the chat history)! " \
             #    f"It is very important that you don't repeat yourself! " \
             #    f"Try to Match your style of message to the other player's message style " \
