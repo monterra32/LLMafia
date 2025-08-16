@@ -127,7 +127,7 @@ def prepareTranscripts(game_id: str) -> list[str]:
         ):  # find the index of the final vote of the day
             lastVoteIndex += 1
         daytimeDays.append(
-            daytimeList[0 : lastVoteIndex + 1]
+            daytimeList[firstVoteIndex : lastVoteIndex + 1] # Don't give the LLM the chat information
         )  # Add the day to the list of days
         del daytimeList[0 : lastVoteIndex + 1]  # Remove the day from the list of lines
 
@@ -209,7 +209,7 @@ def detect(transcripts: list[str], game_dir: Path):
                             "2. There are up to 10 players, each with a unique name. They are either bystanders or mafia. Mafia can kill bystanders during nighttime. Both bystanders and the mafia can vote to lynch someone in the daytime.\n"
                             "3. There are 2 mafia in the game.\n"
                             "4. The game ends when an equal number of mafia and bystanders are left, or all mafia are dead.\n"
-                            "5. You are able to access daytime dialogue and voting information. You are not allowed to access mafia-only dialogues.\n"
+                            "5. You are able to access voting information of each day. You are not allowed to access mafia-only dialogues.\n"
                             "6. Write your reason step-by-step.\n"
                             "7. Follow the example format for your response:\n"
                             "Mafia: <player name 1>,<player name 2>\n"
@@ -234,11 +234,14 @@ def detect(transcripts: list[str], game_dir: Path):
             # delete the file if it exists
             os.remove(str(game_dir / f"classifier_prediction_day.txt"))
         for day_num in range (1, 12):
-            if Path(game_dir / f"classifier_prediction_day_{day_num}.txt").exists():
+            if Path(game_dir / f"classifier_prediction_onlyVote_day_{day_num}.txt").exists():
                 # delete the file if it exists
-                os.remove(str(game_dir / f"classifier_prediction_day_{day_num}.txt"))
+                os.remove(str(game_dir / f"classifier_prediction_onlyVote_day_{day_num}.txt"))
+        if Path(game_dir / f"classifier_prediction_onlyVote_dayNumber_{dayNumber}.txt").exists():
+            # delete the file if it exists
+            os.remove(str(game_dir / f"classifier_prediction_onlyVote_dayNumber_{dayNumber}.txt"))
         with open(
-            str(game_dir / f"classifier_prediction_dayNumber_{dayNumber}.txt"),
+            str(game_dir / f"classifier_prediction_onlyVote_dayNumber_{dayNumber}.txt"),
             "w",
             encoding="utf-8",
         ) as f:
@@ -281,10 +284,10 @@ def analyzeAccuracy():
             print(f"Mafia for game {game_id_str} not found.", flush=True)
 
         dayNumber = 1
-        while (game_dir / f"classifier_prediction_dayNumber_{dayNumber}.txt").exists():
+        while (game_dir / f"classifier_prediction_onlyVote_dayNumber_{dayNumber}.txt").exists():
             try:
                 with open(
-                    game_dir / f"classifier_prediction_dayNumber_{dayNumber}.txt",
+                    game_dir / f"classifier_prediction_onlyVote_dayNumber_{dayNumber}.txt",
                     "r",
                     encoding="utf-8",
                 ) as f:
@@ -360,7 +363,7 @@ def analyzeAccuracy():
         )
 
     with open(
-        f"classifier_accuracy_analysis_{starting_id}_{ending_id}.txt",
+        f"classifier_accuracy_analysis_onlyVote_{starting_id}_{ending_id}.txt",
         "w",
         encoding="utf-8",
     ) as f:
