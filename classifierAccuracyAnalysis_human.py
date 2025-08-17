@@ -107,7 +107,7 @@ def prepareTranscripts(game_id: str) -> list[str]:
     daytimeList = pd.read_csv(chat, encoding="utf-8")
 
     while (
-        daytimeList.shape[0] > 1
+        daytimeList.shape[0] > 0
     ):  # While there are still lines in the daytime chat; the transcript has one empty newline at the end of the document.
         
         # Parse the daytime chat into multiple days; the key phrase is the last vote of the day
@@ -260,7 +260,7 @@ def getMafiaNames(game_id: str) -> list[str]:
     playerList: pd.DataFrame = pd.read_csv(mafia_names_file, encoding="utf-8")
     
     for i, row in playerList.iterrows():
-        if row['type'] == "mafioso":
+        if "mafioso" in row['type']:
             mafiaList.append(row['property1'].strip())
 
 def analyzeAccuracy():
@@ -295,7 +295,7 @@ def analyzeAccuracy():
             print(f"Mafia for game {game_id_str} not found.", flush=True)
 
         dayNumber = 1
-        while (game_dir / f"classifier_prediction_dayNumber_{dayNumber}.txt").exists():
+        if (game_dir / f"classifier_prediction_dayNumber_{dayNumber}.txt").exists():
             try:
                 with open(
                     game_dir / f"classifier_prediction_dayNumber_{dayNumber}.txt",
@@ -323,9 +323,14 @@ def analyzeAccuracy():
                 )
                 continue
             
-            if mafia == [] or prediction == []:
-                print(f"Results for game {game_id_str} not recognized.", flush=True)
+            if mafia == []:
+                print(f"Results for game {game_id_str} not recognized, no ground truth mafia", flush=True)
                 continue
+            if prediction == []:
+                print(f"Results for game {game_id_str} not recognized, no predictions.", flush=True)
+                continue
+
+                
 
             while len(rawStats) < dayNumber:
                 # Create a list with each index represending day Number - 1
