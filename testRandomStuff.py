@@ -33,6 +33,15 @@ for transcript in transcripts:
     print(transcript + "\n\n\n" + "BIG BREAK" + "\n\n\n")
 print (len(transcripts))
 
+# print(classifierAccuracyAnalysis_human.getMafiaNames("0714"))
+
+""" from numbers import Number
+template = "hi my name i{}s"
+dayNumber = 5
+print(template.format(dayNumber)) """
+
+# classifierAccuracyAnalysis_human.analyzeAccuracy()
+
 """ df = pd.read_csv("games\\0714\\info.csv", encoding="utf-8")
 df_numpy = df.to_numpy()
 # print(df_numpy)

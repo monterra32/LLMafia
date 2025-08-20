@@ -5,10 +5,13 @@ import argparse
 import os
 import pandas as pd
 import numpy as np
+import traceback
 
 import openai
 import llm.llm as llm
 import llm_players.llm_constants as llm_constants
+
+FILENAME: str = "classifier_prediction_dayNumber_{}.txt"
 
 # Parse command line arguments: game ID, configuration file name, and number of games to run
 p = argparse.ArgumentParser(
@@ -84,6 +87,70 @@ def indexOf(data: pd.DataFrame, substring: str) -> int:
             return i
     return -1
 
+def removeNighttimeChat(data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Removes the nighttime chat from the data.
+    The nighttime chat is between the "Phase Change to Nighttime" and "Phase Change to Daytime" lines.
+    """
+    daytimeStartKey = "Phase Change to Daytime"
+    daytimeEndKey = "Phase Change to Nighttime"
+    
+    tmpData = data.copy()  # Create a copy of the data to avoid modifying the original DataFrame
+    
+    i = tmpData.shape[0] - 1 # Get the last index of the DataFrame
+    isNighttime = False  # Flag to indicate if we are in nighttime chat
+    print("indices ", tmpData.index)
+    
+    while i > 0:
+        contents = tmpData.loc(axis=0)[i]['contents']
+        if daytimeStartKey in contents:
+            isNighttime = True # previous messages are nighttime chat
+        elif daytimeEndKey in contents:
+            isNighttime = False # previous messages are daytime chat
+        else:
+            if isNighttime:
+                # If we are in nighttime chat, drop the row
+                tmpData.drop(index=i, inplace=True)
+                
+        i -= 1  # Move to the previous row
+
+    return tmpData  # If either key is not found, return the original data
+
+def modifyDaytimeChat(data: pd.DataFrame) -> pd.DataFrame:
+    
+    tmpData = data.copy()  # Create a copy of the data to avoid modifying the original DataFrame
+    
+    for i, row in tmpData.iterrows(): 
+            contents = row['contents']
+            type = row['type']
+            
+            if type == "vote":
+                parsed = contents.split(": ")
+                voter = parsed[0].strip()  # The player who voted
+                votee = parsed[1].strip()  # The player who was voted for
+
+                row['contents'] = f"{voter} voted for {votee}"  # Update the contents to be more readable
+                
+            if type == "info" and "Phase Change to" in contents:
+                # If the type is info and the contents contain "Phase Change to", it is either the beginning or the end of the day
+                if "Daytime" in contents:
+                    parsed = [contents, "No one"]
+                    if "Victim - " in contents:
+                        parsed = contents.split("Victim - ")
+                    
+                    row['contents'] = (
+                        f"Nighttime ended. {parsed[1].strip()} was killed in the night. It is now Daytime.\n"
+                    )
+                if "Nighttime" in contents:
+                    parsed = [contents, "No one"]
+                    if "Victim - " in contents:
+                        parsed = contents.split("Victim - ")
+                    
+                    row['contents'] = (
+                        f"Daytime ended. {parsed[1].strip()} was voted out. It is now Nighttime.\n"
+                    )
+    
+    return tmpData  # Return the modified DataFrame with more readable contents
 
 def prepareTranscripts(game_id: str) -> list[str]:
     print(f"Preparing transcripts for game {game_id}...", flush=True)
@@ -105,76 +172,24 @@ def prepareTranscripts(game_id: str) -> list[str]:
     daytimeDays: list[list[str]] = []
     
     daytimeList = pd.read_csv(chat, encoding="utf-8")
+    daytimeList = removeNighttimeChat(daytimeList)  # Remove the nighttime chat from the data
+    daytimeList = modifyDaytimeChat(daytimeList)  # Modify the daytime chat to be more readable
 
-    while (
-        daytimeList.shape[0] > 0
-    ):  # While there are still lines in the daytime chat; the transcript has one empty newline at the end of the document.
-        
-        # Parse the daytime chat into multiple days; the key phrase is the last vote of the day
-        dayStartKey = "Phase Change to Daytime"  # The following lines are the daytime chat
-        dayEndKey = "Phase Change to Nighttime"  # marks the end of the day
-        prevNightIndex = indexOf(daytimeList, dayEndKey)
-        dayStartIndex = indexOf(daytimeList, dayStartKey) - 1 # -1 to include the "Phase Change to Daytime" line in the day
-        
-        # Remove the preceeding nighttime chat
-        daytimeList.drop(
-            index=daytimeList.index[prevNightIndex : dayStartIndex], inplace=True
-        )
+    # Parse the daytime chat into multiple days; the key phrase is the last vote of the day
+    dayStartKey = "Phase Change to Daytime"  # The following lines are the daytime chat
+    dayEndKey = "Phase Change to Nighttime"  # marks the end of the day
 
-        dayStartIndex = indexOf(daytimeList, dayStartKey)  # Find the start of the day
-        dayEndIndex = indexOf(daytimeList, dayEndKey)  # Find the end of the day
-        dayEndDelete = dayEndIndex - 1  # -1 to make sure code doesn't break
-        
-        tempDay: str = ""
+    tempDay: str = ""
+    for i, row in daytimeList.iterrows():
+        contents = row['contents']
+        if dayEndKey in contents:
+            tempDay += contents + "\n" # Add the last line of the day to the tempDay
+            daytimeDays.append(tempDay)  # Add the day to the list of days
+            tempDay = ""  # Reset the tempDay for the next day
+            continue
 
-        for i, row in daytimeList.iterrows(): 
-            if i < dayStartIndex:
-                # If the index is less than the start of the day, skip the line
-                continue
-            if i > dayEndIndex:
-                # If the index is greater than the end of the day, break the loop
-                break
-            
-            contents = row['contents']
-            type = row['type']
-            
-            if type == "vote":
-                parsed = contents.split(": ")
-                voter = parsed[0].strip()  # The player who voted
-                votee = parsed[1].strip()  # The player who was voted for
-
-                tempDay += (f"{voter} voted for {votee}\n")
-                
-            if type == "text":
-                tempDay += (f"{contents}\n")  # The player who said something
-            
-            if type == "info" and "Phase Change to" in contents:
-                # If the type is info and the contents contain "Phase Change to", it is either the beginning or the end of the day
-                if "Daytime" in contents:
-                    parsed = [contents, "No one"]
-                    if "Victim - " in contents:
-                        parsed = contents.split("Victim - ")
-                    tempDay += (
-                        f"Nighttime ended. {parsed[1].strip()} was killed in the night. It is now Daytime.\n"
-                    )
-                if "Nighttime" in contents:
-                    parsed = [contents, "No one"]
-                    if "Victim - " in contents:
-                        parsed = contents.split("Victim - ")
-                    tempDay += (
-                        f"Daytime ended. {parsed[1].strip()} was voted out. It is now Nighttime.\n"
-                    )
-
-
-        if tempDay.strip() == "":
-            break  # If the day is empty, break the loop
-        daytimeDays.append(
-            tempDay
-        )  # Add the day to the list of days
-        daytimeList.drop(
-            index=daytimeList.index[0 : dayEndDelete], inplace=True
-        )  # Remove the day from the list of lines
-
+        tempDay += contents + "\n"
+       
     for day in range(1, len(daytimeDays) + 1):
         subTranscript = ""
         for i in range(0, day):
@@ -240,8 +255,11 @@ def detect(transcripts: list[str], game_dir: Path):
             if Path(game_dir / f"classifier_prediction_day_{day_num}.txt").exists():
                 # delete the file if it exists
                 os.remove(str(game_dir / f"classifier_prediction_day_{day_num}.txt"))
+        if Path(game_dir / FILENAME.format(dayNumber)).exists():
+            # delete the file if it exists
+            os.remove(str(game_dir / FILENAME.format(dayNumber)))
         with open(
-            str(game_dir / f"classifier_prediction_dayNumber_{dayNumber}.txt"),
+            str(game_dir / FILENAME.format(dayNumber)),
             "w",
             encoding="utf-8",
         ) as f:
@@ -262,6 +280,8 @@ def getMafiaNames(game_id: str) -> list[str]:
     for i, row in playerList.iterrows():
         if "mafioso" in row['type']:
             mafiaList.append(row['property1'].strip())
+    
+    return mafiaList
 
 def analyzeAccuracy():
 
@@ -289,16 +309,17 @@ def analyzeAccuracy():
         mafia = ""
         prediction = ""
         try:
-            with open(game_dir / "mafia_names.txt") as f:
-                mafia: list[str] = getMafiaNames(game_id_str)
-        except FileNotFoundError:
+            mafia: list[str] = getMafiaNames(game_id_str)
+        except FileNotFoundError as e:
             print(f"Mafia for game {game_id_str} not found.", flush=True)
+            print(e, flush=True)
+            print(traceback.print_exc(), flush=True)
 
         dayNumber = 1
-        if (game_dir / f"classifier_prediction_dayNumber_{dayNumber}.txt").exists():
+        while (game_dir / FILENAME.format(dayNumber)).exists():
             try:
                 with open(
-                    game_dir / f"classifier_prediction_dayNumber_{dayNumber}.txt",
+                    game_dir / FILENAME.format(dayNumber),
                     "r",
                     encoding="utf-8",
                 ) as f:
