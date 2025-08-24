@@ -470,6 +470,105 @@ def get_mean_utterances() -> float:
 
     print(mean_utterances_str, flush=True)
             
+def get_num_words(game_id: str) -> int:
+    # Get the number of words in the daytime chat for a given game ID, exluding Game-Manager messages
+    print(f"getting number of words for game {game_id}...", flush=True)
+    """
+    Returns the number of words in the daytime chat for a given game ID.
+    """
+    transcript: list[str] = []
+    game_dir = get_game_dir(game_id)
+    num_words = 0
+    # Load the Daytime chat
+    daytime_chat = game_dir / "public_daytime_chat.txt"
+    if not daytime_chat.exists():
+        print(f"Daytime chat for game {starting_id} not found.", flush=True)
+        return 0
+    daytimeList: list[str] = []
+    with open(daytime_chat, "r", encoding="utf-8") as f:
+        daytimeList = f.readlines()
+    for i, line in enumerate(daytimeList):
+        if line.strip() != "":
+            if ":" in line:
+                if "Game-Manager" not in line:
+                    text = line.split(":", 1)[1]
+                    num_words += len(text.split(" "))
+            if ":" not in line:
+                num_words += len(line.split(" "))
+    
+    return num_words
+
+def get_mean_words_per_utterance():
+    # Get the mean number of words per utterance for all games between starting_id and ending_id
+    print(
+        f"Finding the mean words per utterance for games {starting_id} to {ending_id}...",
+        flush=True,
+    )
+    total_utterances = 0
+    total_words = 0
+    
+    for game_id in range(int(starting_id), int(ending_id) + 1):
+        game_id_str = str(game_id).zfill(
+            4
+        )
+    
+    total_utterances = get_num_utterances(game_id_str)
+    total_words = get_num_words(game_id_str)
+    
+    mean_words_per_utterance_str = (
+        f"For {total_utterances} utterances between {starting_id} and {ending_id}:\n"
+    )
+    mean_words_per_utterance_str += (
+        f"Mean number of words per utterance: {total_words / total_utterances:.2f}\n"
+    )
+    print(mean_words_per_utterance_str, flush=True)
+    with open(
+        f"mean_words_per_utterance_analysis_{starting_id}_{ending_id}.txt",
+        "w",
+        encoding="utf-8",
+    ) as f:
+        f.write(mean_words_per_utterance_str)
+
+def get_random_chance():
+    # Get the single and exact match chance of randomly guessing 2 mafia out of 10 players
+    # Do it using monte carlo simulation
+    print(
+        f"Finding the random chance of guessing 2 mafia out of 10 players...",
+        flush=True,
+    )
+    import random
+    total_simulations = 1000000
+    single_match = 0
+    exact_match = 0
+    num_players = 10
+    num_mafia = 2
+    for _ in range(total_simulations):
+        players = [f"player_{i}" for i in range(num_players)]
+        mafia = random.sample(players, num_mafia)
+        prediction = random.sample(players, num_mafia)
+        if len(set(mafia) & set(prediction)) == 2:
+            exact_match += 1
+            single_match += 1
+        elif len(set(mafia) & set(prediction)) == 1:
+            single_match += 1
+    
+    random_chance_str = (
+        f"For {total_simulations} simulations of randomly guessing 2 mafia out of 10 players:\n"
+    )
+    random_chance_str += (
+        f"Single match chance: {single_match / total_simulations * 100:.2f}%\n"
+        f"Exact match chance: {exact_match / total_simulations * 100:.2f}%\n"
+    )
+    print(random_chance_str, flush=True)
+    with open(
+        f"random_chance_analysis_{starting_id}_{ending_id}.txt",
+        "w",
+        encoding="utf-8",
+    ) as f:
+        f.write(random_chance_str)
+                
 if __name__ == "__main__":
     # get_mean_utterances()
-    main()
+    # main()
+    # get_mean_words_per_utterance()
+    get_random_chance()

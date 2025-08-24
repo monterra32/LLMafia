@@ -540,43 +540,26 @@ def get_num_utterances(game_id: str) -> int:
     game_dir = get_game_dir(game_id)
 
     # Load the game transcript - both Daytime and Manager chat
-    daytime_chat = game_dir / "public_daytime_chat.txt"
+    daytime_chat = game_dir / "info.csv"
     if not daytime_chat.exists():
         print(f"Daytime chat for game {starting_id} not found.", flush=True)
         return 0
 
     daytimeList: list[str] = []
 
-    with open(daytime_chat, "r", encoding="utf-8") as f:
-        daytimeList = f.readlines()
+    daytimeList = pd.read_csv(daytime_chat, encoding="utf-8").copy()
 
     # Find all the beginning of utterances
-    is_voting = False
-    day_num = 1
-    
-    for i, line in enumerate(daytimeList):
-        if line.strip() != "":
-            if ":" in line: # colon indicates a player utterance
-                if "Game-Manager" not in line:  # Ignore Game-Manager messages
-                    if day_num < 5:
-                        transcript.append(line.strip())
+    for i, line in daytimeList.iterrows():
+        if line['type'] == "text":  # Only consider player utterances, ignore Game-Manager messages
+            transcript.append(line['contents'].strip())
                     
-                    if is_voting: # End of voting, time for next day.
-                        is_voting = False
-                        day_num += 1
-                elif "Game_Manager" in line:
-                    is_voting = True
-    
     print(transcript, flush=True)
     
     return len(transcript)
 
 def get_mean_utterances(game_id: str) -> float:
     
-    """
-    The game length is capped to 4 days!
-    """
-
     print(
         f"Finding the mean utterances per game for games {starting_id} to {ending_id}...",
         flush=True,
@@ -612,6 +595,64 @@ def get_mean_utterances(game_id: str) -> float:
         f.write(mean_utterances_str)
 
     print(mean_utterances_str, flush=True)
+
+def get_num_words(game_id: str) -> int:
+    # Get the number of words in the daytime chat for a given game ID, exluding Game-Manager messages
+    print(f"getting number of words for game {game_id}...", flush=True)
+    """
+    Returns the number of words in the daytime chat for a given game ID.
+    """
+    game_dir = get_game_dir(game_id)
+    num_words = 0
+    # Load the Daytime chat
+    daytime_chat = game_dir / "info.csv"
+    if not daytime_chat.exists():
+        print(f"Daytime chat for game {starting_id} not found.", flush=True)
+        return 0
+    daytimeList: list[str] = []
+    daytimeList = pd.read_csv(daytime_chat, encoding="utf-8").copy()
+    for i, line in daytimeList.iterrows():
+        if line['type'] == "text":  # Ignore Game-Manager messages
+            content = line['contents']
+            if ":" in content:
+                raw = content.split(":", 1)[1]
+                num_words += len(raw.split(" "))
+            if ":" not in content:
+                num_words += len(content.split(" "))
+    
+    return num_words
+
+def get_mean_words_per_utterance():
+    # Get the mean number of words per utterance for all games between starting_id and ending_id
+    print(
+        f"Finding the mean words per utterance for games {starting_id} to {ending_id}...",
+        flush=True,
+    )
+    total_utterances = 0
+    total_words = 0
+    
+    for game_id in range(int(starting_id), int(ending_id) + 1):
+        game_id_str = str(game_id).zfill(
+            4
+        )
+    
+    total_utterances = get_num_utterances(game_id_str)
+    total_words = get_num_words(game_id_str)
+    
+    mean_words_per_utterance_str = (
+        f"For {total_utterances} utterances between {starting_id} and {ending_id}:\n"
+    )
+    mean_words_per_utterance_str += (
+        f"Mean number of words per utterance: {total_words / total_utterances:.2f}\n"
+    )
+    print(mean_words_per_utterance_str, flush=True)
+    with open(
+        f"mean_words_per_utterance_analysis_{starting_id}_{ending_id}.txt",
+        "w",
+        encoding="utf-8",
+    ) as f:
+        f.write(mean_words_per_utterance_str)
             
 if __name__ == "__main__":
-    main()
+    # main()
+    get_mean_words_per_utterance()
