@@ -13,10 +13,11 @@ import numpy as np
 
 
 
-""" transcripts = classifierAccuracyAnalysis.prepareTranscripts("0635")
+# 0631 - 0665
+transcripts = classifierAccuracyAnalysis.prepareTranscripts("0635")
 for transcript in transcripts:
     print(transcript + "\n\n\n" + "BIG BREAK" + "\n\n\n")
-print (len(transcripts)) """
+print (len(transcripts))
 
 """ transcripts = classifierAccuracyAnalysis_noVote.prepareTranscripts("0635")
 for transcript in transcripts:
@@ -28,10 +29,10 @@ for transcript in transcripts:
     print(transcript + "\n\n\n" + "BIG BREAK" + "\n\n\n")
 print (len(transcripts)) """
 
-transcripts = classifierAccuracyAnalysis_human.prepareTranscripts("0714")
+""" transcripts = classifierAccuracyAnalysis_human.prepareTranscripts("0714")
 for transcript in transcripts:
     print(transcript + "\n\n\n" + "BIG BREAK" + "\n\n\n")
-print (len(transcripts))
+print (len(transcripts)) """
 
 # print(classifierAccuracyAnalysis_human.getMafiaNames("0714"))
 

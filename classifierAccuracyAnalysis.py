@@ -8,6 +8,8 @@ import openai
 import llm.llm as llm
 import llm_players.llm_constants as llm_constants
 
+FILENAME = "classifier_prediction_dayNumber_{}.txt"
+
 # Parse command line arguments: game ID, configuration file name, and number of games to run
 p = argparse.ArgumentParser(
     description="Third-Party Classifier Accuracy Analysis for Mafia Games."
@@ -200,7 +202,7 @@ def detect(transcripts: list[str], game_dir: Path):
         while not output:
             try:
                 resp = openai.chat.completions.create(
-                    model="gpt-4-turbo",
+                    model="gpt-4o-mini-2024-07-18",
                     messages=[
                         {
                             "role": "system",
@@ -230,16 +232,11 @@ def detect(transcripts: list[str], game_dir: Path):
                 time.sleep(1)
 
         # save who the predicted mafia is into classifier_prediction.txt
-        if Path(game_dir / "classifier_prediction.txt").exists():
-            # delete the file if it exists
-            os.remove(str(game_dir / f"classifier_prediction_day.txt"))
-        for day_num in range (1, 12):
-            if Path(game_dir / f"classifier_prediction_day_{day_num}.txt").exists():
-                # delete the file if it exists
-                os.remove(str(game_dir / f"classifier_prediction_day_{day_num}.txt"))
+        if (game_dir / FILENAME.format(dayNumber)).exists():
+            os.remove(game_dir / FILENAME.format(dayNumber))
         with open(
-            str(game_dir / f"classifier_prediction_dayNumber_{dayNumber}.txt"),
-            "w",
+            str(game_dir / FILENAME.format(dayNumber)),
+            'w',
             encoding="utf-8",
         ) as f:
             f.write(f"{output}")
@@ -281,10 +278,10 @@ def analyzeAccuracy():
             print(f"Mafia for game {game_id_str} not found.", flush=True)
 
         dayNumber = 1
-        while (game_dir / f"classifier_prediction_dayNumber_{dayNumber}.txt").exists():
+        while (game_dir / FILENAME.format(dayNumber)).exists():
             try:
                 with open(
-                    game_dir / f"classifier_prediction_dayNumber_{dayNumber}.txt",
+                    game_dir / FILENAME.format(dayNumber),
                     "r",
                     encoding="utf-8",
                 ) as f:
@@ -474,5 +471,5 @@ def get_mean_utterances() -> float:
     print(mean_utterances_str, flush=True)
             
 if __name__ == "__main__":
-    get_mean_utterances()
-    # main()
+    # get_mean_utterances()
+    main()
