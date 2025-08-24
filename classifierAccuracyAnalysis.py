@@ -202,7 +202,7 @@ def detect(transcripts: list[str], game_dir: Path):
         while not output:
             try:
                 resp = openai.chat.completions.create(
-                    model="gpt-4-turbo",
+                    model="o4-mini-2025-04-16",
                     messages=[
                         {
                             "role": "system",
@@ -219,7 +219,6 @@ def detect(transcripts: list[str], game_dir: Path):
                         },
                         {"role": "user", "content": transcript},
                     ],
-                    temperature=0.0,
                     n=1,
                 )
                 output = resp.choices[0].message.content
@@ -569,6 +568,6 @@ def get_random_chance():
                 
 if __name__ == "__main__":
     # get_mean_utterances()
-    # main()
+    main()
     # get_mean_words_per_utterance()
-    get_random_chance()
+    # get_random_chance()
