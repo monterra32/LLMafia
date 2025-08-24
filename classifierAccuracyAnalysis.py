@@ -202,7 +202,7 @@ def detect(transcripts: list[str], game_dir: Path):
         while not output:
             try:
                 resp = openai.chat.completions.create(
-                    model="gpt-4o-mini-2024-07-18",
+                    model="gpt-4-turbo",
                     messages=[
                         {
                             "role": "system",
@@ -462,7 +462,7 @@ def get_mean_utterances() -> float:
     )
 
     with open(
-        f"mean_utterances_per_game_analysis_{starting_id}_{ending_id}.txt",
+        f"mean_utterances_per_game_analysis_{starting_id}_{ending_id}_gpt_4_turbo.txt",
         "w",
         encoding="utf-8",
     ) as f:
