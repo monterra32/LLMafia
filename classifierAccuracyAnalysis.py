@@ -143,7 +143,7 @@ def prepareTranscripts(game_id: str) -> list[str]:
         # Remove the oneMafiaLeft message if it exists
         daytimeLynchKey = "Now it's Daytime for"  # The following lines are the results of the daytime lynch and nighttime kill.
         daytimeLynchIndex = indexOf(managerList, daytimeLynchKey) + 1
-        managerList[daytimeLynchIndex] = managerList[daytimeLynchIndex].split("Their role was")[0].strip() + "\n"
+        # managerList[daytimeLynchIndex] = managerList[daytimeLynchIndex].split("Their role was")[0].strip() + "\n"
 
         nighttimeKillKey = "Now it's Nighttime for"
         nighttimeKillIndex = indexOf(managerList, nighttimeKillKey) + 1
@@ -160,7 +160,7 @@ def prepareTranscripts(game_id: str) -> list[str]:
             managerList[nighttimeKillIndex] = (
                 noVoteSplitList[0] + "killed in the night" + noVoteSplitList[1]
             )
-            managerList[nighttimeKillIndex] = managerList[nighttimeKillIndex].split("Their role was")[0].strip()
+            # managerList[nighttimeKillIndex] = managerList[nighttimeKillIndex].split("Their role was")[0].strip()
         elif nighttimeKillIndex == 0: # Transcript ends with a daytime lynch  
             nighttimeKillIndex = daytimeLynchIndex
             
