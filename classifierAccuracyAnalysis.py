@@ -435,12 +435,8 @@ def get_num_utterances(game_id: str) -> int:
     
     return len(transcript)
 
-def get_mean_utterances(game_id: str) -> float:
+def get_mean_utterances() -> float:
     
-    """
-    The game length is capped to 4 days!
-    """
-
     print(
         f"Finding the mean utterances per game for games {starting_id} to {ending_id}...",
         flush=True,
@@ -478,4 +474,5 @@ def get_mean_utterances(game_id: str) -> float:
     print(mean_utterances_str, flush=True)
             
 if __name__ == "__main__":
-    main()
+    get_mean_utterances()
+    # main()

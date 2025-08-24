@@ -13,6 +13,12 @@ import llm_players.llm_constants as llm_constants
 
 FILENAME: str = "classifier_prediction_dayNumber_{}.txt"
 
+# Constants for day phase changes
+DAY_START_KEY = "Phase Change to Daytime"
+DAY_END_KEY = "Phase Change to Nighttime"
+DAY_START_KEY_MODIFIED = "Nighttime ended."
+DAY_END_KEY_MODIFIED = "Daytime ended."
+
 # Parse command line arguments: game ID, configuration file name, and number of games to run
 p = argparse.ArgumentParser(
     description="Third-Party Classifier Accuracy Analysis for Mafia Games."
@@ -92,33 +98,35 @@ def removeNighttimeChat(data: pd.DataFrame) -> pd.DataFrame:
     Removes the nighttime chat from the data.
     The nighttime chat is between the "Phase Change to Nighttime" and "Phase Change to Daytime" lines.
     """
-    daytimeStartKey = "Phase Change to Daytime"
-    daytimeEndKey = "Phase Change to Nighttime"
-    
     tmpData = data.copy()  # Create a copy of the data to avoid modifying the original DataFrame
     
-    i = tmpData.shape[0] - 1 # Get the last index of the DataFrame
-    isNighttime = False  # Flag to indicate if we are in nighttime chat
-    print("indices ", tmpData.index)
+    # Find all rows that are between nighttime phases
+    rows_to_drop = []
+    in_nighttime = False
     
-    while i > 0:
-        contents = tmpData.loc(axis=0)[i]['contents']
-        if daytimeStartKey in contents:
-            isNighttime = True # previous messages are nighttime chat
-        elif daytimeEndKey in contents:
-            isNighttime = False # previous messages are daytime chat
-        else:
-            if isNighttime:
-                # If we are in nighttime chat, drop the row
-                tmpData.drop(index=i, inplace=True)
-                
-        i -= 1  # Move to the previous row
-
-    return tmpData  # If either key is not found, return the original data
+    for i, row in data.iterrows():
+        contents = row['contents']
+        
+        if DAY_START_KEY in contents:
+            in_nighttime = False
+        elif DAY_END_KEY in contents:
+            in_nighttime = True
+        elif in_nighttime:
+            # If we're in nighttime, mark this row for removal
+            rows_to_drop.append(i)
+    
+    # Drop the nighttime rows
+    if rows_to_drop:
+        tmpData = tmpData.drop(index=rows_to_drop)
+    
+    print(f"Removed {len(rows_to_drop)} nighttime rows", flush=True)
+    return tmpData
 
 def modifyDaytimeChat(data: pd.DataFrame) -> pd.DataFrame:
     
     tmpData = data.copy()  # Create a copy of the data to avoid modifying the original DataFrame
+    
+    #print(f"Modifying chat data...", flush=True)
     
     for i, row in tmpData.iterrows(): 
             contents = row['contents']
@@ -129,27 +137,30 @@ def modifyDaytimeChat(data: pd.DataFrame) -> pd.DataFrame:
                 voter = parsed[0].strip()  # The player who voted
                 votee = parsed[1].strip()  # The player who was voted for
 
-                row['contents'] = f"{voter} voted for {votee}"  # Update the contents to be more readable
+                new_content = f"{voter} voted for {votee}"
+                tmpData.at[i, 'contents'] = new_content  # Update the contents to be more readable
+                # print(f"  Row {i}: Modified vote '{contents}' -> '{new_content}'", flush=True)
                 
-            if type == "info" and "Phase Change to" in contents:
+            elif type == "info" and "Phase Change to" in contents:
                 # If the type is info and the contents contain "Phase Change to", it is either the beginning or the end of the day
-                if "Daytime" in contents:
+                if DAY_START_KEY in contents:
                     parsed = [contents, "No one"]
                     if "Victim - " in contents:
                         parsed = contents.split("Victim - ")
                     
-                    row['contents'] = (
-                        f"Nighttime ended. {parsed[1].strip()} was killed in the night. It is now Daytime.\n"
-                    )
-                if "Nighttime" in contents:
+                    new_content = f"{DAY_START_KEY_MODIFIED} {parsed[1].strip()} was killed in the night. It is now Daytime."
+                    tmpData.at[i, 'contents'] = new_content
+                    # print(f"  Row {i}: Modified info (daytime) '{contents}' -> '{new_content}'", flush=True)
+                elif DAY_END_KEY in contents:
                     parsed = [contents, "No one"]
                     if "Victim - " in contents:
                         parsed = contents.split("Victim - ")
                     
-                    row['contents'] = (
-                        f"Daytime ended. {parsed[1].strip()} was voted out. It is now Nighttime.\n"
-                    )
+                    new_content = f"{DAY_END_KEY_MODIFIED} {parsed[1].strip()} was voted out. It is now Nighttime."
+                    tmpData.at[i, 'contents'] = new_content
+                    # print(f"  Row {i}: Modified info (nighttime) '{contents}' -> '{new_content}'", flush=True)
     
+    #print(f"Finished modifying chat data", flush=True)
     return tmpData  # Return the modified DataFrame with more readable contents
 
 def prepareTranscripts(game_id: str) -> list[str]:
@@ -172,23 +183,69 @@ def prepareTranscripts(game_id: str) -> list[str]:
     daytimeDays: list[list[str]] = []
     
     daytimeList = pd.read_csv(chat, encoding="utf-8")
+    print(f"Original data shape: {daytimeList.shape}", flush=True)
+    print(f"Original data preview:", flush=True)
+    with pd.option_context('display.max_columns', None, 'display.width', None):
+        print(daytimeList.head(10), flush=True)
+    
     daytimeList = removeNighttimeChat(daytimeList)  # Remove the nighttime chat from the data
+    print(f"After removing nighttime chat: {daytimeList.shape}", flush=True)
+    print(f"After removing nighttime chat preview:", flush=True)
+    with pd.option_context('display.max_columns', None, 'display.width', None):
+        print(daytimeList.head(10), flush=True)
+    
     daytimeList = modifyDaytimeChat(daytimeList)  # Modify the daytime chat to be more readable
-
+    print(f"After modifying chat: {daytimeList.shape}", flush=True)
+    print(f"After modifying chat preview:", flush=True)
+    with pd.option_context('display.max_columns', None, 'display.width', None):
+        print(daytimeList.head(10), flush=True)
+    
+    # debugging to show the final daytime list
+    # print(f"All contents in daytimeList:", flush=True)
+    # for i, row in daytimeList.iterrows():
+    #   print(f"Row {i}: Type={row['type']}, Content='{row['contents']}'", flush=True)
+    
     # Parse the daytime chat into multiple days; the key phrase is the last vote of the day
-    dayStartKey = "Phase Change to Daytime"  # The following lines are the daytime chat
-    dayEndKey = "Phase Change to Nighttime"  # marks the end of the day
+    dayStartKey = DAY_START_KEY_MODIFIED  # The following lines are the daytime chat
+    dayEndKey = DAY_END_KEY_MODIFIED  # marks the end of the day
 
     tempDay: str = ""
+    currentDay = 0
+    firstDayStarted = False  # Flag to track if we've started the first meaningful day
+    
     for i, row in daytimeList.iterrows():
         contents = row['contents']
+        timestamp = row['creation_time']
+        
+        # Start a new day when we see "Phase Change to Daytime"
+        if dayStartKey in contents:
+            if tempDay.strip() and firstDayStarted:  # Save previous day if it exists and we've started
+                daytimeDays.append(tempDay.strip())
+            tempDay = f"[{timestamp}] {contents}\n"  # Start new day with timestamp
+            firstDayStarted = True  # Mark that we've started the first meaningful day
+            currentDay += 1
+            continue
+            
+        # End the day when we see "Phase Change to Nighttime"
         if dayEndKey in contents:
-            tempDay += contents + "\n" # Add the last line of the day to the tempDay
-            daytimeDays.append(tempDay)  # Add the day to the list of days
-            tempDay = ""  # Reset the tempDay for the next day
+            if firstDayStarted:  # Only add content if we've started the first meaningful day
+                tempDay += f"[{timestamp}] {contents}\n"
+                daytimeDays.append(tempDay.strip())  # Save the completed day
+            tempDay = ""  # Reset for next day
             continue
 
-        tempDay += contents + "\n"
+        # Add all other content to current day (only if we've started the first meaningful day)
+        if firstDayStarted:
+            tempDay += f"[{timestamp}] {contents}\n"
+    
+    # Don't forget the last day if it doesn't end with a phase change
+    if tempDay.strip() and firstDayStarted:
+        daytimeDays.append(tempDay.strip())
+    
+    print(f"Parsed {len(daytimeDays)} days:", flush=True)
+    for i, day in enumerate(daytimeDays):
+        print(f"Day {i+1} length: {len(day)} characters", flush=True)
+        print(f"Day {i+1} preview: {day[:100]}...", flush=True)
        
     for day in range(1, len(daytimeDays) + 1):
         subTranscript = ""
@@ -200,7 +257,8 @@ def prepareTranscripts(game_id: str) -> list[str]:
                     + "\n"
                 )
         transcript.append(subTranscript.strip())
-
+        print(f"Day {day} transcript length: {len(subTranscript)} characters", flush=True)
+        print(f"Day {day} transcript preview: {subTranscript[:200]}...", flush=True)
 
     return transcript  # Return the list of transcripts for each day
 
@@ -212,10 +270,35 @@ openai.api_key = llm.get_api_key(
 
 
 def detect(transcripts: list[str], game_dir: Path):
+    
+    # Clean up any existing classifier prediction files before starting analysis
+    print(f"Cleaning up existing classifier prediction files in {game_dir}...", flush=True)
+    
+    # Delete any existing classifier_prediction_dayNumber_*.txt files using FILENAME
+    for day_num in range(1, 20):
+        day_file = game_dir / FILENAME.format(day_num)
+        if day_file.exists():
+            os.remove(str(day_file))
+            print(f"  Deleted: {FILENAME.format(day_num)}", flush=True)
+    
+    print(f"Cleanup complete. Starting analysis...", flush=True)
+    
     for dayNumber, transcript in enumerate(transcripts, start=1):
+        print(f"\n{'='*80}", flush=True)
+        print(f"DAY {dayNumber} ANALYSIS", flush=True)
+        print(f"{'='*80}", flush=True)
+        print(f"Transcript being sent to LLM (length: {len(transcript)} characters):", flush=True)
+        print(f"-----------------", flush=True)
+        print(transcript, flush=True)
+
+        print(f"{'='*80}", flush=True)
+        
         # Call gpt-4 and have it, given the transcript, predict who it thinks the mafia is.
         output = None
-        while not output:
+        retry_count = 0
+        max_retries = 3  # Prevent infinite loops
+        
+        while not output and retry_count < max_retries:
             try:
                 resp = openai.chat.completions.create(
                     model="gpt-4-turbo",
@@ -239,13 +322,26 @@ def detect(transcripts: list[str], game_dir: Path):
                     n=1,
                 )
                 output = resp.choices[0].message.content
+                print(f"LLM Output: {output}", flush=True)  # Debug output
+                if "Mafia: " not in output:
+                    print(f"Output doesn't contain 'Mafia: '. Retry {retry_count + 1}/{max_retries}...", flush=True)
+                    output = None
+                    retry_count += 1
+                    continue
                 prediction = output.split("Mafia: ")[1].split("\n")[0].strip()
                 if prediction == "":
-                    print("No mafia detected. Retrying...", flush=True)
+                    print(f"No mafia detected. Retry {retry_count + 1}/{max_retries}...", flush=True)
                     output = None
+                    retry_count += 1
             except openai.OpenAIError as e:
                 print(e, flush=True)
+                retry_count += 1
                 time.sleep(1)
+        
+        # If we exhausted all retries, create a fallback output
+        if not output:
+            print(f"Failed to get valid LLM response after {max_retries} retries for day {dayNumber}. Creating fallback.", flush=True)
+            output = "Mafia: Unable to determine\nReason: Failed to get valid LLM response after multiple attempts."
 
         # save who the predicted mafia is into classifier_prediction.txt
         if Path(game_dir / "classifier_prediction.txt").exists():
