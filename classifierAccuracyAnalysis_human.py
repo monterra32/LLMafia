@@ -652,7 +652,60 @@ def get_mean_words_per_utterance():
         encoding="utf-8",
     ) as f:
         f.write(mean_words_per_utterance_str)
-            
+
+def get_random_chance():
+    # Get the single and exact match chance of randomly guessing 2 mafia out of n players
+    # n being the number of players in that game_id.
+    # Do it using monte carlo simulation
+    print(
+        f"Finding the random chance of guessing 2 mafia out of n players...",
+        flush=True,
+    )
+    import random
+    total_simulations = 0
+    num_simulations = 10000
+    single_match = 0
+    exact_match = 0
+    num_mafia = 2
+    for game_id in range(int(starting_id), int(ending_id) + 1):
+        game_id_str = str(game_id).zfill(
+            4
+        )
+        
+        # Find the number of players in the game
+        game_dir = get_game_dir(game_id_str)
+        player_file = game_dir / "node.csv"
+        playerList: pd.DataFrame = pd.read_csv(player_file, encoding="utf-8").copy()
+        num_players = playerList.shape[0] - 1  # Exclude the Game-Manager node
+        
+        for _ in range(num_simulations):
+            players = [f"player_{i}" for i in range(num_players)]
+            mafia = random.sample(players, num_mafia)
+            prediction = random.sample(players, num_mafia)
+            if len(set(mafia) & set(prediction)) == 2:
+                exact_match += 1
+                single_match += 1
+            elif len(set(mafia) & set(prediction)) == 1:
+                single_match += 1
+        
+        total_simulations += num_simulations
+        
+    random_chance_str = (
+        f"For {total_simulations} simulations of randomly guessing 2 mafia out of n players:\n"
+    )
+    random_chance_str += (
+        f"Single match chance: {single_match / total_simulations * 100:.2f}%\n"
+        f"Exact match chance: {exact_match / total_simulations * 100:.2f}%\n"
+    )
+    print(random_chance_str, flush=True)
+    with open(
+        f"random_chance_analysis_{starting_id}_{ending_id}.txt",
+        "w",
+        encoding="utf-8",
+    ) as f:
+        f.write(random_chance_str)
+ 
 if __name__ == "__main__":
     # main()
-    get_mean_words_per_utterance()
+    # get_mean_words_per_utterance()
+    get_random_chance()
