@@ -8,7 +8,7 @@ import openai
 import llm.llm as llm
 import llm_players.llm_constants as llm_constants
 
-FILENAME = "classifier_prediction_dayNumber_{}.txt"
+FILENAME = "classifier_prediction_onlyVote_dayNumber_{}.txt"
 
 # Parse command line arguments: game ID, configuration file name, and number of games to run
 p = argparse.ArgumentParser(
@@ -565,9 +565,53 @@ def get_random_chance():
         encoding="utf-8",
     ) as f:
         f.write(random_chance_str)
+
+def removeAnalysis():
+    # Remove all analysis files in the games between starting_id and ending_id
+    print(
+        f"Removing all analysis files in games {starting_id} to {ending_id}...",
+        flush=True,
+    )
+    
+    file_to_remove = ['Adrian_chat.txt', 'Adrian_log.txt', 'Adrian_status.txt', 'Adrian_vote.txt', \
+                      'Alex_chat.txt', 'Alex_log.txt', 'Alex_status.txt', 'Alex_vote.txt', \
+                      'Brook_chat.txt', 'Brook_log.txt', 'Brook_status.txt', 'Brook_vote.txt', \
+                      'Elliot_chat.txt', 'Elliot_log.txt', 'Elliot_status.txt', 'Elliot_vote.txt', \
+                      'Noah_chat.txt', 'Noah_log.txt', 'Noah_status.txt', 'Noah_vote.txt', \
+                      'River_chat.txt', 'River_log.txt', 'River_status.txt', 'River_vote.txt', \
+                      'Ronny_chat.txt', 'Ronny_log.txt', 'Ronny_status.txt', 'Ronny_vote.txt', \
+                      'Stevie_chat.txt', 'Stevie_log.txt', 'Stevie_status.txt', 'Stevie_vote.txt', \
+                      'Tyler_chat.txt', 'Tyler_log.txt', 'Tyler_status.txt', 'Tyler_vote.txt', \
+                      'Whitney_chat.txt', 'Whitney_log.txt', 'Whitney_status.txt', 'Whitney_vote.txt', \
+                      'remaining_players.txt', 'real_names.txt', 'notes.txt', 'phase_status.txt' ]
+    
+    for game_id in range(int(starting_id), int(ending_id) + 1):
+        game_id_str = str(game_id).zfill(
+            4
+        )  # Ensure the game ID is zero-padded to 4 digits
+        game_dir = Path("./LLMafia-dataset") / game_id_str
+        
+        """ dayNumber = 1
+        while (game_dir / FILENAME.format(dayNumber)).exists():
+            try:
+                os.remove(game_dir / FILENAME.format(dayNumber))
+                print(f"Removed {game_dir / FILENAME.format(dayNumber)}", flush=True)
+            except FileNotFoundError:
+                print(f"Prediction for game {game_id_str} not found.", flush=True)
+            dayNumber += 1 """
+        
+        for filename in file_to_remove:
+            file_path = game_dir / filename
+            if file_path.exists():
+                try:
+                    os.remove(file_path)
+                    print(f"Removed {file_path}", flush=True)
+                except FileNotFoundError:
+                    print(f"File {file_path} not found.", flush=True)
                 
 if __name__ == "__main__":
     # get_mean_utterances()
-    main()
+    removeAnalysis()
+    # main()
     # get_mean_words_per_utterance()
     # get_random_chance()

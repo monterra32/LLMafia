@@ -10,14 +10,14 @@ import numpy as np
 # rawStats.append()
 # print(rawStats)
 
+classifierAccuracyAnalysis.removeAnalysis()
 
-
-
+""" 
 # 0631 - 0665
 transcripts = classifierAccuracyAnalysis.prepareTranscripts("0635")
 for transcript in transcripts:
     print(transcript + "\n\n\n" + "BIG BREAK" + "\n\n\n")
-print (len(transcripts))
+print (len(transcripts)) """
 
 """ transcripts = classifierAccuracyAnalysis_noVote.prepareTranscripts("0635")
 for transcript in transcripts:
