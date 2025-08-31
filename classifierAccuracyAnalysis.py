@@ -1,5 +1,7 @@
 from pathlib import Path
 import time
+
+import pandas as pd
 import game_constants
 import argparse
 import os
@@ -8,7 +10,7 @@ import openai
 import llm.llm as llm
 import llm_players.llm_constants as llm_constants
 
-FILENAME = "classifier_prediction_onlyVote_dayNumber_{}.txt"
+FILENAME = "classifier_prediction_dayNumber_{}.txt"
 
 # Parse command line arguments: game ID, configuration file name, and number of games to run
 p = argparse.ArgumentParser(
@@ -608,10 +610,117 @@ def removeAnalysis():
                     print(f"Removed {file_path}", flush=True)
                 except FileNotFoundError:
                     print(f"File {file_path} not found.", flush=True)
+
+def getHumanMafiaNames(game_id: str) -> str:
+    game_dir = get_game_dir(game_id)
+    
+    mafia_names_file = game_dir / "node.csv"
+    mafiaStr: str = ""
+    
+    playerList: pd.DataFrame = pd.read_csv(mafia_names_file, encoding="utf-8")
+    
+    for i, row in playerList.iterrows():
+        if "mafioso" in row['type']:
+            mafiaStr += (row['property1'].strip()) + ", "
+    
+    return mafiaStr
+
+
+def analyzeReasonings():
+    # Analyze the reasonings given by the classifier in the prediction files
+    print(
+        f"Analyzing reasonings given by the classifier in games {starting_id} to {ending_id}...",
+        flush=True,
+    )
+    
+    reasoning_file = f"classifier_reasoning_analysis_{starting_id}_{ending_id}.txt"
+    
+    if os.path.exists(reasoning_file):
+        os.remove(reasoning_file)
+    
+    with open(reasoning_file, "w", encoding="utf-8") as f:
+        for game_id in range(int(starting_id), int(ending_id) + 1):
+            game_id_str = str(game_id).zfill(
+                4
+            )  # Ensure the game ID is zero-padded to 4 digits
+            game_dir = get_game_dir(game_id_str)
+            
+            reasoning = ""
+            dayNumber = 1
+            
+            mafia = ""
+            # For LLM transcripts
+            """ try:
+                with open(game_dir / "mafia_names.txt") as f_mafia:
+                    mafia: str = f_mafia.read()
+            except FileNotFoundError:
+                print(f"Mafia for game {game_id_str} not found.", flush=True) """
+            
+            try:
+                mafia = getHumanMafiaNames(game_id_str)
+            except FileNotFoundError:
+                print(f"Mafia for game {game_id_str} not found.", flush=True)
+            
+            while (game_dir / FILENAME.format(dayNumber)).exists():
+                try:
+                    with open(
+                        game_dir / FILENAME.format(dayNumber),
+                        "r",
+                        encoding="utf-8",
+                    ) as f_read:
+                        output: str = f_read.readlines()
+                        reasoning = output
+                        f.write(f"Game {game_id_str}, Day {dayNumber}:\n Actual Mafia: {mafia} \n Reasoning and guess from observer: {reasoning}\n\n")
+                except FileNotFoundError:
+                    print(f"Prediction for game {game_id_str} not found.", flush=True)
+                except IndexError:
+                    print(f"Prediction for game {game_id_str} not recognized.", flush=True)
+                dayNumber += 1
+    
+    reasoning = ""
+    with open(reasoning_file, "r", encoding="utf-8") as f:
+        reasoning = f.read()
                 
+    # Call gpt-4 and have it, given the transcript, predict who it thinks the mafia is.
+    output = None
+    while not output:
+        try:
+            resp = openai.chat.completions.create(
+                model="o4-mini-2025-04-16",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are analyzing the reasoning of an observer a mafia game, a popular type of social deduction game. Your goal is to find patterns in the reasoning that the observer gives for why someone is a mafia when they correctly detect a mafia. The rules are given as follows.\n"
+                        "1. Your job is to find patterns in the observer's reasoning when it correctly guesses the mafia. You may find multiple patterns.\n"
+                        "2. The observer has access to daytime dialogue and voting information. The observer is not allowed to access mafia-only dialogues.\n"
+                        "3. Give numerical numbers to the patterns you find: count in how many transcripts you find the pattern.\n" \
+                        "3. explain the patterns you find step-by-step. Cite examples that you find by referencing the game number and day number the oberver's reasoning is from.\n"
+                        "4. Follow the example format for your response:\n"
+                        "Pattern: <pattern>\n"
+                        "Count: <number of times you found the pattern>\n"
+                        "Reason and Evidence: <your reasoning and evidence here>",
+                    },
+                    {"role": "user", "content": reasoning},
+                ],
+                n=1,
+            )
+            output = resp.choices[0].message.content
+        except openai.OpenAIError as e:
+            print(e, flush=True)
+            time.sleep(1)
+                
+    # Save the output to a file
+    with open(
+        f"classifier_reasoning_patterns_{starting_id}_{ending_id}.txt",
+        "w",
+        encoding="utf-8",
+    ) as f:
+        f.write(output)
+        
 if __name__ == "__main__":
     # get_mean_utterances()
-    removeAnalysis()
+    analyzeReasonings()
+    # removeAnalysis()
     # main()
     # get_mean_words_per_utterance()
     # get_random_chance()

@@ -10,7 +10,9 @@ import numpy as np
 # rawStats.append()
 # print(rawStats)
 
-classifierAccuracyAnalysis.removeAnalysis()
+# classifierAccuracyAnalysis.removeAnalysis()
+
+classifierAccuracyAnalysis.analyzeReasonings()
 
 """ 
 # 0631 - 0665
