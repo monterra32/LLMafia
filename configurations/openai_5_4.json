@@ -26,7 +26,7 @@
         },
         {
             "name": "Emerson",
-            "is_mafia": false,
+            "is_mafia": true,
             "is_llm": false,
             "real_name": "chris",
             "llm_config": {}
@@ -57,7 +57,7 @@
         },
         {
             "name": "Frankie",
-            "is_mafia": true,
+            "is_mafia": false,
             "is_llm": true,
             "real_name": "LLM2",
             "llm_config": {
@@ -104,8 +104,8 @@
             }
         }
     ],
-    "daytime_minutes": 1.5,
-    "nighttime_minutes": 0.5,
+    "daytime_minutes": 2,
+    "nighttime_minutes": 0.3,
     "notes": "first test of implementing openai players, using o4-mini",
     "preparation_command": ".\\prepare_config.py -o openai-5-4-1 -p 5 -m 1 -l 4 -dt 1.5 -nt .5"
 }
