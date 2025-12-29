@@ -1,0 +1,185 @@
+# LLMafia Project Cursor Rules
+
+## Project Overview
+This is a research project for playing the social deduction game Mafia with LLM agents and human players. The system uses asynchronous file-based communication between multiple processes (game manager, LLM players, human players, spectator).
+
+## Code Style & Conventions
+
+### Python Style
+- Follow PEP 8 style guidelines
+- Use descriptive variable and function names
+- Prefer explicit imports over wildcard imports (though some files use `from game_constants import *` for convenience)
+- Use type hints where helpful, but they're not strictly required
+- Use docstrings for classes and functions, especially public APIs
+
+### File Operations
+- **Always use `pathlib.Path`** for file paths, not string paths
+- Use `game_dir` as a Path object representing the current game directory
+- File operations should specify `encoding='utf-8'` explicitly
+- Use `read_text()` and `write_text()` methods from Path objects
+- File-based communication: players communicate via text files in `./games/XXXX/` directories
+
+### String Formatting
+- Use f-strings for string formatting (preferred)
+- Use `.format()` for message templates defined in constants
+- Message format: `[{timestamp}] {name}: {message}` (defined in `game_constants.py`)
+
+### Constants & Configuration
+- All game constants are defined in `game_constants.py`
+- Configuration files are JSON format in `configurations/` directory
+- Use constants from `game_constants.py` rather than hardcoding values
+- Game-specific constants follow naming: `*_FILE`, `*_FORMAT`, `*_MESSAGE`, etc.
+
+### Error Handling
+- Use descriptive error messages
+- Validate file existence before reading (especially game directories)
+- Handle encoding issues explicitly (UTF-8 wrapper for stdout in some files)
+
+### Logging & Output
+- Use `termcolor.colored()` for colored terminal output
+- Color constants: `MANAGER_COLOR`, `DAYTIME_COLOR`, `NIGHTTIME_COLOR`, etc.
+- Use `flush=True` in print statements for real-time output
+- LLM players use a `Logger` class for internal logging to `{PlayerName}_log.txt`
+
+## Project Structure
+
+### Core Files
+- `mafia_main.py`: Game manager (main game loop, phase control, voting)
+- `game_constants.py`: All constants, file names, message formats
+- `game_status_checks.py`: Utility functions for checking game state
+- `prepare_game.py`: Initialize new game directories
+- `prepare_config.py`: Generate game configurations
+
+### Player Interfaces
+- `llm_interface.py`: LLM player interface (runs LLM agents)
+- `player_merged_chat_and_input.py`: Combined human player interface (recommended)
+- `player_chat.py` & `player_input.py`: Separate human player interfaces
+- `spectator_chat.py`: View all messages including mafia secret chat
+
+### LLM Player System
+- `llm_players/llm_player.py`: Abstract base class for LLM players
+- `llm_players/schedule_then_generate_player.py`: Main agent implementation
+- `llm_players/factory.py`: Factory pattern for creating player instances
+- `llm_players/llm_constants.py`: LLM-specific prompts and settings
+- `llm_players/logger.py`: Logging utility for LLM players
+- `llm/llm.py`: LLM API implementations (OpenAI, Together AI)
+
+### Game Data Structure
+- Games stored in `./games/XXXX/` where XXXX is 4-digit game ID
+- Key files:
+  - `config.json`: Game configuration
+  - `public_daytime_chat.txt`: Daytime discussion
+  - `public_nighttime_chat.txt`: Mafia nighttime chat
+  - `public_manager_chat.txt`: Game announcements
+  - `{PlayerName}_chat.txt`: Individual player messages
+  - `{PlayerName}_vote.txt`: Player votes
+  - `{PlayerName}_log.txt`: LLM player logs
+  - `phase_status.txt`: Current game phase
+  - `remaining_players.txt`: Active players list
+  - `who_wins.txt`: Final result
+
+## Common Patterns
+
+### Game Directory Access
+```python
+from pathlib import Path
+from game_constants import get_game_dir_from_argv, GAME_CONFIG_FILE
+
+game_dir = get_game_dir_from_argv()
+config_path = game_dir / GAME_CONFIG_FILE
+```
+
+### Reading Configuration
+```python
+import json
+from game_constants import GAME_CONFIG_FILE, PLAYERS_KEY_IN_CONFIG
+
+with open(game_dir / GAME_CONFIG_FILE, "r", encoding='utf-8') as f:
+    config = json.load(f)
+players = config[PLAYERS_KEY_IN_CONFIG]
+```
+
+### File-Based Communication
+- Players write to their personal files: `{PlayerName}_chat.txt`, `{PlayerName}_vote.txt`
+- Game manager reads from personal files and writes to public files
+- Use line-by-line reading with counters to track new messages
+- Always append with newlines: `f.write(format_message(name, message))`
+
+### Message Formatting
+```python
+from game_constants import format_message, get_current_timestamp, MESSAGE_FORMAT
+
+# Use the helper function
+formatted = format_message(player_name, message_text)
+
+# Or manually
+timestamp = get_current_timestamp()
+formatted = MESSAGE_FORMAT.format(timestamp=timestamp, name=name, message=message) + "\n"
+```
+
+### Phase Management
+- Check phase with `is_nighttime()` from `game_status_checks`
+- Update phase status: `(game_dir / PHASE_STATUS_FILE).write_text(DAYTIME)` or `NIGHTTIME`
+- Voting phases: `DAYTIME_VOTING_TIME`, `NIGHTTIME_VOTING_TIME`
+
+### Player Management
+- Use `Player` class from `mafia_main.py` for game manager
+- Check if player is eliminated: `is_voted_out(player_name, game_dir)`
+- Get remaining players from `remaining_players.txt`
+
+## LLM Integration
+
+### LLM Player Creation
+- Use factory pattern: `llm_player_factory(config, game_dir)`
+- LLM config includes: `model_name`, `use_openai`, `use_together`, `async_type`, `temperature`, etc.
+- LLM players implement abstract methods: `should_generate_message()`, `generate_message()`
+
+### LLM API
+- Use `llm/llm.py` for API calls
+- Supports OpenAI and Together AI
+- API keys via environment variables or `.secrets_dict.txt`
+
+## Testing & Development
+
+### Running Games
+1. Prepare game: `python prepare_game.py -c configurations/openai_5_4.json -i <game_id>`
+2. Start game manager: `python mafia_main.py -i <game_id>`
+3. Start LLM players: `python llm_interface.py -i <game_id>` (multiple terminals)
+4. Start human player: `python player_merged_chat_and_input.py -i <game_id>`
+5. Optional spectator: `python spectator_chat.py -i <game_id>`
+
+### Analysis Scripts
+- Analysis scripts in root directory (e.g., `classifierAccuracyAnalysis.py`, `winRateAnalysis.py`)
+- Output analysis results to text files or Excel files
+- Use game data from `games/` directories
+
+## Best Practices
+
+1. **Always use Path objects** for file operations, never string concatenation
+2. **Explicit encoding**: Always specify `encoding='utf-8'` for file operations
+3. **Use constants**: Import and use constants from `game_constants.py` instead of magic strings
+4. **File-based communication**: Remember this is a multi-process system using files for IPC
+5. **Game directory validation**: Check that game directories exist before operations
+6. **Phase awareness**: Be aware of daytime vs nighttime phases and voting phases
+7. **Player state**: Track player elimination status and remaining players
+8. **Message formatting**: Use `format_message()` helper for consistent message formatting
+9. **Colored output**: Use `colored()` from termcolor for user-facing terminal output
+10. **Flush output**: Use `flush=True` in print statements for real-time updates
+
+## Common Gotchas
+
+- Game directory must exist before operations (created by `prepare_game.py`)
+- Players must "join" by writing to their status file before game starts
+- File reading is line-based with counters to track new messages
+- Phase status file controls what players can see/do
+- Mafia players see each other's roles, bystanders don't
+- Voting happens after discussion phases end
+- Game ends when mafia outnumber bystanders OR all mafia eliminated
+
+## Dependencies
+- Standard library: `pathlib`, `json`, `argparse`, `time`, `re`
+- External: `termcolor`, `transformers`, `torch`, `together`, `flask`, `fastapi`, etc.
+- See `requirements.txt` for full list
+
+
+
