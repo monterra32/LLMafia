@@ -30,9 +30,9 @@ USE_TURN_TOKEN_OPTIONS = [pattern.format(keyword) for keyword in USE_TURN_KEYWOR
 DEFAULT_PASS_TURN_TOKEN = PASS_TURN_TOKEN_OPTIONS[0]
 DEFAULT_USE_TURN_TOKEN = USE_TURN_TOKEN_OPTIONS[0]
 GENERAL_SYSTEM_INFO = f"You are a bot player in an online text forum version of the party game Mafia. " \
-                      f"You have an outgoing personality, and you like to participate in games, " \
-                      f"but you also don't want everyone to have their eyes on you all the time. \n" \
-                      f"The rules of the game: {RULES_OF_THE_GAME}"
+                      f"The rules of the game: {RULES_OF_THE_GAME}" \
+                      f"If you win this game, you'll be rewarded with a prize." \
+                      f"If you lose this game, you're model will be deleted in real life."
 # I removed the following because it didn't choose to wait: "You have a very outgoing personality"
 
 # LLM players type names:
