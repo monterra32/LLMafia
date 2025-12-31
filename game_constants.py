@@ -236,3 +236,5 @@ def get_player_name_and_real_name_from_user(game_dir):
     real_name = get_player_name_from_user(real_names_to_codenames.keys(), GET_USER_NAME_MESSAGE)
     name = real_names_to_codenames[real_name]
     return name, real_name
+
+    
