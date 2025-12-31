@@ -53,8 +53,8 @@ RULES_OF_THE_GAME = "In this game each player is secretly assigned a role, eithe
                     "one player. Then the game moves to a Nighttime phase, where only mafia " \
                     "players interact and vote to decide which bystander player they want to " \
                     "eliminate (bystanders aren't exposed to the mafia identities or " \
-                    "interaction). The mafia's goal is to outnumber the bystanders, and the " \
-                    "bystanders' goal is to vote out all real mafia. " \
+                    "interaction). The mafia's win when they outnumber or have the same number as the bystanders, and the " \
+                    "bystanders win when they vote out all real mafia. " \
                     # "No player should lie under any circumstances, no matter what their role is. This means that every player will tell the truth about their role if asked"
 
 # formats for saving texts

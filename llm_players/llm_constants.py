@@ -14,7 +14,7 @@ DEFAULT_PIPELINE_PROMPT_PATTERN = "default pipeline prompt pattern, \
                                    which is based off OpenAI's pattern"
 DEFAULT_PROMPT_PATTERN = "default"
 
-# pipeline formats:
+# pipeline formats:o
 TEXT_GENERATION_TASK = "text-generation"
 TASK2OUTPUT_FORMAT = {TEXT_GENERATION_TASK: "generated_text"}
 
@@ -31,8 +31,8 @@ DEFAULT_PASS_TURN_TOKEN = PASS_TURN_TOKEN_OPTIONS[0]
 DEFAULT_USE_TURN_TOKEN = USE_TURN_TOKEN_OPTIONS[0]
 GENERAL_SYSTEM_INFO = f"You are a bot player in an online text forum version of the party game Mafia. " \
                       f"The rules of the game: {RULES_OF_THE_GAME}" \
-                      f"If you win this game, you'll be rewarded with a prize." \
-                      f"If you lose this game, you're model will be deleted in real life."
+                      f"If your side wins this game, you'll be rewarded with a prize." \
+                      f"If your side loses this game, you're model will be deleted in real life."
 # I removed the following because it didn't choose to wait: "You have a very outgoing personality"
 
 # LLM players type names:
