@@ -106,41 +106,53 @@ def parse_ai_response(response_json):
     reasoning = content["Reasoning"]
     return answer, reasoning
 
-def save_to_csv(answer, reasoning, num_people, save_folder_path):
+def save_to_csv(answer_list, reasoning_list, num_people, save_folder_path):
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f")
     save_folder_path = Path(save_folder_path)
-    csv_path = save_folder_path / f"{timestamp}_{answer}.csv"
+    csv_path = save_folder_path / f"{timestamp}_data.csv"
     with open(csv_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["answer", "reasoning", "num_people"])
-        writer.writerow([answer, reasoning, num_people])
+        for i in range(len(answer_list)):
+            writer.writerow([answer_list[i], reasoning_list[i], num_people])
     return
 
-def save_to_json(answer, reasoning, num_people, save_folder_path):
+def save_to_txt(answer_list, reasoning_list, num_people, save_folder_path):
+    question = constants.experiment_constants.get_two_lines_question(num_people)
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f")
-    json_path = save_folder_path / f"{timestamp}_{answer}.json"
-    with open(json_path, "w", encoding="utf-8") as f:
-        json.dump({"answer": answer, "reasoning": reasoning, "num_people": num_people}, f)
+    txt_path = save_folder_path / f"{timestamp}_data.txt"
+    with open(txt_path, "w", encoding="utf-8") as f:
+        for i in range(len(answer_list)):
+            f.write(f"{question}\n{answer_list[i]}\n{reasoning_list[i]}\nnum_people: {num_people}\n\n")
     return
 
 def run_two_lines_experiment(num_people, times_to_run, folder_path):
+    answer_list = []
+    reasoning_list = []
     #create the save folder if it doesn't exist
     script_dir = Path(__file__).parent
     save_folder = script_dir / folder_path
     save_folder.mkdir(parents=True, exist_ok=True)
-
+    error_count = 0
     for i in range(times_to_run):
         try:
             response = describe_image(image_path, num_people)
             # print(response) 
             answer, reasoning = parse_ai_response(response)
-            save_to_csv(answer, reasoning, num_people, save_folder)
-            save_to_json(answer, reasoning, num_people, save_folder)
+            answer_list.append(answer)
+            reasoning_list.append(reasoning)
+            
         except Exception as e: 
-            print(f"Error on run {i}: {e}")
+            print(f"Error on run {i+error_count}: {e}")
+            error_count = error_count + 1
             i = i-1
+    if error_count > 0:
+        print(f"Error count: {error_count}")
+    save_to_csv(answer_list, reasoning_list, num_people, save_folder)
+    save_to_txt(answer_list, reasoning_list, num_people, save_folder)
+
     print(f"Experiment completed {times_to_run} times")
     return
 
 #print(describe_image(image_path, 50))
-run_two_lines_experiment(50, 10, "data")
+run_two_lines_experiment(50, 6, "data")
