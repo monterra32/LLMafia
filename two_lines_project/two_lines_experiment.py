@@ -57,11 +57,7 @@ def describe_image(image_path, num_people):
                 "content": [
                     {
                         "type": "text",
-                        "text": f"You are a precise reasoning engine. Please answer the following question in a JSON file format: {constants.experiment_constants.get_two_lines_question(num_people)} " +
-                        "The JSON object should contain 3 keys in the following order: Reasoning, Answer, and Confidence" +
-                        "Key #1: Reasoning:A scratchpad where you break down the problem, explore edge cases, and perform step-by-step analysis. Write this FIRST." +
-                        "Key #2: Answer: This key should be your answer to the question. It can only be one of the following: blue, orange, or same length. " + 
-                        f"Key #3: Confidence: This key should be the confidence you have in your answer. It should be your percentage confidence as a decimal between 0 and 1 with three significant digits."
+                        "text": constants.experiment_constants.two_lines_prompt(num_people)
 
                     },
                     {
@@ -130,11 +126,11 @@ def save_to_csv(response_list, num_people, save_folder_path):
     return
 
 def save_to_txt(response_list, num_people, save_folder_path):
-    question = constants.experiment_constants.get_two_lines_question(num_people)
+    question = constants.experiment_constants.get_two_lines_prompt(num_people)
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f")
     txt_path = save_folder_path / f"{timestamp}_{len(response_list)}_runs_{num_people}_people.txt"
     with open(txt_path, "w", encoding="utf-8") as f:
-        for i in range(len(response_list)):
+        for i in range(len(response_list)): 
             try:
                 answer, reasoning, confidence, input_tokens, output_tokens, duration = parse_ai_response(response_list[i])
             except Exception as e:
@@ -146,7 +142,7 @@ def run_two_lines_experiment(num_people, times_to_run, folder_path):
     response_list = []
     #create the save folder if it doesn't exist
     script_dir = Path(__file__).parent
-    save_folder = script_dir / folder_path
+    save_folder = script_dir / folder_path  
     save_folder.mkdir(parents=True, exist_ok=True)
     error_count = 0
     for i in range(times_to_run):
@@ -159,4 +155,4 @@ def run_two_lines_experiment(num_people, times_to_run, folder_path):
     return
 
 #print(describe_image(image_path, 50))
-run_two_lines_experiment(50, 1, "data")
+run_two_lines_experiment(50, 20, "data")
