@@ -1,6 +1,3 @@
-from re import A
-from socketserver import ForkingMixIn
-from tkinter import W
 from openai import OpenAI
 import requests
 import time
@@ -10,6 +7,7 @@ import json
 import csv
 from datetime import datetime
 import re
+import argparse
 
 # Add the project root to Python path
 project_root = Path(__file__).parent.parent
@@ -24,9 +22,9 @@ import base64
 
 image_path = str(Path(__file__).parent / "two_lines_image.png")
 
-api_file = open(".secrets_dict.txt", "r")
-secrets_dict = json.load(api_file)
-api_file.close()
+secrets_file_path = project_root / ".secrets_dict.txt"
+with open(secrets_file_path, "r", encoding="utf-8") as api_file:
+    secrets_dict = json.load(api_file)
 api_key = secrets_dict["OPENAI_API_KEY"]
 
 
@@ -132,4 +130,14 @@ def run_two_lines_experiment(num_people, times_to_run, folder_path):
     return
 
 #print(describe_image(image_path, 50))
-run_two_lines_experiment(0, 5, "data")
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Run two lines experiment")
+    parser.add_argument("-n", "--num_people", type=int, default=0,
+                        help="Number of people to mention in the question (default: 0)")
+    parser.add_argument("-t", "--times_to_run", type=int, default=25,
+                        help="Number of times to run the experiment (default: 25)")
+    parser.add_argument("-f", "--folder_path", type=str, default="data",
+                        help="Folder name to save results in (default: 'data')")
+    args = parser.parse_args()
+    
+    run_two_lines_experiment(args.num_people, args.times_to_run, args.folder_path)
