@@ -19,3 +19,41 @@ def get_system_prompt(num_people):
 def get_user_prompt(num_people):
     user_prompt = get_two_lines_question(num_people)
     return user_prompt
+
+def get_payload(num_people, base64_image):
+    system_prompt = get_system_prompt(num_people)
+    user_prompt = get_user_prompt(num_people)
+    payload = {
+        "model": "gpt-4o",
+        "temperature": 0.7,
+        "messages": [
+            {
+                "role": "system",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": system_prompt
+                    }
+                ]    
+            },
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": user_prompt
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/jpeg;base64,{base64_image}",
+                            "detail": "low"
+                        }
+                    }
+                ]
+            }    
+            
+        ],
+        "max_tokens": 1000
+    }
+    return payload

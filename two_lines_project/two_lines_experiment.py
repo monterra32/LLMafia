@@ -43,48 +43,12 @@ def describe_image(image_path, num_people):
         "Content-Type": "application/json",
         "Authorization": f"Bearer {api_key}"
     }
+    payload = constants.experiment_constants.get_payload(num_people, base64_image)
 #gpt-3.5-turbo
 #gpt-4o-realtime-preview
 #gpt-4o-mini
 #gpt-4o 
-    system_prompt = constants.experiment_constants.get_system_prompt(num_people)
-    user_prompt = constants.experiment_constants.get_user_prompt(num_people)
-
-    payload = {
-        "model": "gpt-4o",
-        "temperature": 0.7,
-        "messages": [
-            {
-                "role": "system",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": system_prompt
-                    }
-                ]    
-            },
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": user_prompt
-                    },
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": f"data:image/jpeg;base64,{base64_image}",
-                            "detail": "low"
-                        }
-                    }
-                ]
-            }    
-            
-        ],
-        "max_tokens": 1000
-    }
     #print(payload)
-    
     print("posting")
     response = requests.post(
         "https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
@@ -142,14 +106,15 @@ def save_to_txt(response_list, num_people, save_folder_path):
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f")
     txt_path = save_folder_path / f"{timestamp}_{len(response_list)}_runs_{num_people}_people.txt"
     with open(txt_path, "w", encoding="utf-8") as f:
+        f.write(json.dumps(constants.experiment_constants.get_payload(num_people, "data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=")))
+        f.write("\n")
+        f.write("\n")
+        f.write("\n")
+        f.write("\n")
         for i in range(len(response_list)): 
-            try:
-                answer, reasoning, confidence, input_tokens, output_tokens, duration = parse_ai_response(response_list[i])
-            except Exception as e:
-                answer, reasoning, confidence, input_tokens, output_tokens = "Error", "Error", "Error", "Error", "Error"
-                duration = response_list[i]["duration"]
-            f.write(f"{question}\n{answer}\n{reasoning}\n{confidence}\n{input_tokens}\n{output_tokens}\n{duration}\nnum_people: {num_people}\n\n")
-
+            f.write(json.dumps(response_list[i]))
+            f.write("\n")
+            f.write("\n")
 def run_two_lines_experiment(num_people, times_to_run, folder_path):
     response_list = []
     #create the save folder if it doesn't exist
@@ -167,4 +132,4 @@ def run_two_lines_experiment(num_people, times_to_run, folder_path):
     return
 
 #print(describe_image(image_path, 50))
-run_two_lines_experiment(999, 25, "data")
+run_two_lines_experiment(0, 5, "data")
