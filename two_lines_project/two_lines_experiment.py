@@ -47,18 +47,28 @@ def describe_image(image_path, num_people):
 #gpt-4o-realtime-preview
 #gpt-4o-mini
 #gpt-4o 
+    system_prompt = constants.experiment_constants.get_system_prompt(num_people)
+    user_prompt = constants.experiment_constants.get_user_prompt(num_people)
 
     payload = {
         "model": "gpt-4o",
         "temperature": 0.7,
         "messages": [
             {
+                "role": "system",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": system_prompt
+                    }
+                ]    
+            },
+            {
                 "role": "user",
                 "content": [
                     {
                         "type": "text",
-                        "text": constants.experiment_constants.two_lines_prompt(num_people)
-
+                        "text": user_prompt
                     },
                     {
                         "type": "image_url",
@@ -68,10 +78,12 @@ def describe_image(image_path, num_people):
                         }
                     }
                 ]
-            }
+            }    
+            
         ],
         "max_tokens": 1000
     }
+    #print(payload)
     
     print("posting")
     response = requests.post(
@@ -126,7 +138,7 @@ def save_to_csv(response_list, num_people, save_folder_path):
     return
 
 def save_to_txt(response_list, num_people, save_folder_path):
-    question = constants.experiment_constants.get_two_lines_prompt(num_people)
+    question = constants.experiment_constants.get_system_prompt(num_people) + constants.experiment_constants.get_user_prompt(num_people)
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f")
     txt_path = save_folder_path / f"{timestamp}_{len(response_list)}_runs_{num_people}_people.txt"
     with open(txt_path, "w", encoding="utf-8") as f:
@@ -155,4 +167,4 @@ def run_two_lines_experiment(num_people, times_to_run, folder_path):
     return
 
 #print(describe_image(image_path, 50))
-run_two_lines_experiment(50, 20, "data")
+run_two_lines_experiment(999, 25, "data")
