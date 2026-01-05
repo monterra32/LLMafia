@@ -52,9 +52,15 @@ def describe_image(image_path, num_people, context=False):
         "https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
     after = time.time()
     print(f"Time taken: {after-before} seconds")
-    response_dict = response.json()
-    response_dict["duration"] = after-before
-    return response_dict
+    try:
+        response_dict = response.json()
+        response_dict["duration"] = after-before
+        return response_dict
+    except Exception as e:
+        print(f"ERROR: {e}")
+        print(response.text)
+        print("i think its a malformed json response")
+        return "Error", "Error", "Error", "Error", "Error", "Error"
 
 def parse_ai_response(response_json):
     #print(response_json)    # Check if response is valid
@@ -112,13 +118,13 @@ def save_to_txt(response_list, num_people, save_folder_path, context):
             f.write(json.dumps(response_list[i]))
             f.write("\n")
             f.write("\n")
-def run_two_lines_experiment(num_people, context, times_to_run, folder_path):
+def run_two_lines_experiment(num_people, times_to_run, folder_path, is_context):
 
     # Convert context to boolean if it's a string
-    if isinstance(context, str):
-        context = context.lower() in ('true', '1', 'yes', 'on')
-    elif not isinstance(context, bool):
-        context = bool(context)  # Convert other types (int, etc.) to bool
+    if isinstance(is_context, str):
+        is_context = is_context.lower() in ('true', '1', 'yes', 'on')
+    elif not isinstance(is_context, bool):
+        is_context = bool(is_context)  # Convert other types (int, etc.) to bool
 
     response_list = []
     #create the save folder if it doesn't exist
@@ -127,10 +133,10 @@ def run_two_lines_experiment(num_people, context, times_to_run, folder_path):
     save_folder.mkdir(parents=True, exist_ok=True)
     error_count = 0
     for i in range(times_to_run):
-        response = describe_image(image_path, num_people, context)
+        response = describe_image(image_path, num_people, is_context)
         response_list.append(response)
     save_to_csv(response_list, num_people, save_folder)
-    save_to_txt(response_list, num_people, save_folder, context)
+    save_to_txt(response_list, num_people, save_folder, is_context)
 
     print(f"Experiment completed {times_to_run} times")
     return
@@ -140,12 +146,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run two lines experiment")
     parser.add_argument("-n", "--num_people", type=int, default=0,
                         help="Number of people to mention in the question (default: 0)")
-    parser.add_argument("-c", "--context", type=str, default="true",
-                        help="Whether to include context or distillation in the question (default: true)")
     parser.add_argument("-t", "--times_to_run", type=int, default=25,
                         help="Number of times to run the experiment (default: 25)")
     parser.add_argument("-f", "--folder_path", type=str, default="data",
                         help="Folder name to save results in (default: 'data')")
+    parser.add_argument("-c", "--is_context", type=str, default="true",
+                        help="Whether to include context or distillation in the question (default: true)")
     args = parser.parse_args()
     
-    run_two_lines_experiment(args.num_people, args.context, args.times_to_run, args.folder_path)
+    run_two_lines_experiment(args.num_people, args.times_to_run, args.folder_path, args.is_context)
