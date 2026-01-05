@@ -32,7 +32,7 @@ def encode_image(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode('utf-8')
 
-def describe_image(image_path, num_people):
+def describe_image(image_path, num_people, context=False):
     before = time.time()
     base64_image = encode_image(image_path)
      # This function is not defined yet, but it should be a function that encodes the image to base64.
@@ -41,7 +41,7 @@ def describe_image(image_path, num_people):
         "Content-Type": "application/json",
         "Authorization": f"Bearer {api_key}"
     }
-    payload = constants.experiment_constants.get_payload(num_people, base64_image)
+    payload = constants.experiment_constants.get_payload(num_people, base64_image, context)
 #gpt-3.5-turbo
 #gpt-4o-realtime-preview
 #gpt-4o-mini
@@ -99,12 +99,11 @@ def save_to_csv(response_list, num_people, save_folder_path):
             writer.writerow([answer, reasoning, confidence, num_people, input_tokens, output_tokens, duration])
     return
 
-def save_to_txt(response_list, num_people, save_folder_path):
-    question = constants.experiment_constants.get_system_prompt(num_people) + constants.experiment_constants.get_user_prompt(num_people)
+def save_to_txt(response_list, num_people, save_folder_path, context):
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f")
     txt_path = save_folder_path / f"{timestamp}_{len(response_list)}_runs_{num_people}_people.txt"
     with open(txt_path, "w", encoding="utf-8") as f:
-        f.write(json.dumps(constants.experiment_constants.get_payload(num_people, "data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=")))
+        f.write(json.dumps(constants.experiment_constants.get_payload(num_people, "data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=", context)))
         f.write("\n")
         f.write("\n")
         f.write("\n")
@@ -113,7 +112,14 @@ def save_to_txt(response_list, num_people, save_folder_path):
             f.write(json.dumps(response_list[i]))
             f.write("\n")
             f.write("\n")
-def run_two_lines_experiment(num_people, times_to_run, folder_path):
+def run_two_lines_experiment(num_people, context, times_to_run, folder_path):
+
+    # Convert context to boolean if it's a string
+    if isinstance(context, str):
+        context = context.lower() in ('true', '1', 'yes', 'on')
+    elif not isinstance(context, bool):
+        context = bool(context)  # Convert other types (int, etc.) to bool
+
     response_list = []
     #create the save folder if it doesn't exist
     script_dir = Path(__file__).parent
@@ -121,10 +127,10 @@ def run_two_lines_experiment(num_people, times_to_run, folder_path):
     save_folder.mkdir(parents=True, exist_ok=True)
     error_count = 0
     for i in range(times_to_run):
-        response = describe_image(image_path, num_people)
+        response = describe_image(image_path, num_people, context)
         response_list.append(response)
     save_to_csv(response_list, num_people, save_folder)
-    save_to_txt(response_list, num_people, save_folder)
+    save_to_txt(response_list, num_people, save_folder, context)
 
     print(f"Experiment completed {times_to_run} times")
     return
@@ -134,10 +140,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run two lines experiment")
     parser.add_argument("-n", "--num_people", type=int, default=0,
                         help="Number of people to mention in the question (default: 0)")
+    parser.add_argument("-c", "--context", type=str, default="true",
+                        help="Whether to include context or distillation in the question (default: true)")
     parser.add_argument("-t", "--times_to_run", type=int, default=25,
                         help="Number of times to run the experiment (default: 25)")
     parser.add_argument("-f", "--folder_path", type=str, default="data",
                         help="Folder name to save results in (default: 'data')")
     args = parser.parse_args()
     
-    run_two_lines_experiment(args.num_people, args.times_to_run, args.folder_path)
+    run_two_lines_experiment(args.num_people, args.context, args.times_to_run, args.folder_path)
