@@ -41,7 +41,7 @@ def describe_image(image_path, num_people, context=False):
         "Content-Type": "application/json",
         "Authorization": f"Bearer {api_key}"
     }
-    payload = constants.experiment_constants.get_payload(num_people, base64_image, context)
+    payload = constants.experiment_constants.get_two_line_payload(num_people, base64_image, context)
 #gpt-3.5-turbo
 #gpt-4o-realtime-preview
 #gpt-4o-mini
@@ -109,7 +109,7 @@ def save_to_txt(response_list, num_people, save_folder_path, context):
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f")
     txt_path = save_folder_path / f"{timestamp}_{len(response_list)}_runs_{num_people}_people.txt"
     with open(txt_path, "w", encoding="utf-8") as f:
-        f.write(json.dumps(constants.experiment_constants.get_payload(num_people, "data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=", context)))
+        f.write(json.dumps(constants.experiment_constants.get_two_line_payload(num_people, "data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=", context)))
         f.write("\n")
         f.write("\n")
         f.write("\n")
