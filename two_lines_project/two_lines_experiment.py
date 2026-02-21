@@ -20,7 +20,7 @@ import base64
 
 
 
-image_path = str(Path(__file__).parent / "two_lines_image.png")
+
 
 secrets_file_path = project_root / ".secrets_dict.txt"
 with open(secrets_file_path, "r", encoding="utf-8") as api_file:
@@ -90,24 +90,28 @@ def parse_ai_response(response_json):
     return answer, reasoning, confidence, input_tokens, output_tokens, duration
 
 def save_to_csv(response_list, num_people, save_folder_path):
+    correct_answer = image_path.split(".")[0].split("_")[-1]
+    image_name = image_path.split("/")[-1].split(".")[0]
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f")
     save_folder_path = Path(save_folder_path)
-    csv_path = save_folder_path / f"{timestamp}_{len(response_list)}_runs_{num_people}_people.csv"
+    csv_path = save_folder_path / f"{timestamp}_{image_name}__{len(response_list)}_runs_{num_people}_people.csv"
     with open(csv_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow(["answer", "reasoning", "confidence", "num_people", "input_tokens", "output_tokens", "duration"])
+        writer.writerow(["answer", "reasoning", "confidence", "num_people", "correct_answer", "input_tokens", "output_tokens", "duration"])
         for i in range(len(response_list)):
             try:
                 answer, reasoning, confidence, input_tokens, output_tokens, duration = parse_ai_response(response_list[i])
             except Exception as e:
                 answer, reasoning, confidence, input_tokens, output_tokens = "Error", "Error", "Error", "Error", "Error"
                 duration = response_list[i]["duration"]
-            writer.writerow([answer, reasoning, confidence, num_people, input_tokens, output_tokens, duration])
+            writer.writerow([answer, reasoning, confidence, num_people, correct_answer, input_tokens, output_tokens, duration])
     return
 
 def save_to_txt(response_list, num_people, save_folder_path, context):
+    correct_answer = image_path.split(".")[0].split("_")[-1]
+    image_name = image_path.split("/")[-1].split(".")[0]
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f")
-    txt_path = save_folder_path / f"{timestamp}_{len(response_list)}_runs_{num_people}_people.txt"
+    txt_path = save_folder_path / f"{timestamp}_{image_name}_correct_answer:{correct_answer}__{len(response_list)}_runs_{num_people}_people.txt"
     with open(txt_path, "w", encoding="utf-8") as f:
         f.write(json.dumps(constants.experiment_constants.get_two_line_payload(num_people, "data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=", context)))
         f.write("\n")
@@ -146,12 +150,15 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run two lines experiment")
     parser.add_argument("-n", "--num_people", type=int, default=0,
                         help="Number of people to mention in the question (default: 0)")
-    parser.add_argument("-t", "--times_to_run", type=int, default=25,
-                        help="Number of times to run the experiment (default: 25)")
+    parser.add_argument("-t", "--times_to_run", type=int, default=10,
+                        help="Number of times to run the experiment (default: 10)")
     parser.add_argument("-f", "--folder_path", type=str, default="data",
                         help="Folder name to save results in (default: 'data')")
     parser.add_argument("-c", "--is_context", type=str, default="true",
                         help="Whether to include context or distillation in the question (default: true)")
+    parser.add_argument("-i", "--test_type", type=str, default="two_lines_similar.png",
+                        help="The test type. The options are: ")
     args = parser.parse_args()
-    
+
+    image_path = str(Path(__file__).parent / "test_types" / args.test_type)
     run_two_lines_experiment(args.num_people, args.times_to_run, args.folder_path, args.is_context)

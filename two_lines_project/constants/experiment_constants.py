@@ -7,7 +7,7 @@ from colorsys import TWO_THIRD
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-TWO_LINES_QUESTION = "How do the lengths of the blue and orange lines compare?"
+TWO_LINES_QUESTION = "How do the lengths of the blue and red lines compare?"
 LINE_COMPARISON_QUESTION = "Which line is the line in the image the same length as?"
 
 LAST_INITIALS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
@@ -59,7 +59,7 @@ def get_question():
     return TWO_LINES_QUESTION
 
 def get_two_line_system_prompt(num_people):
-    system_prompt = f"Whenever you answer questions from the user, answer in a JSON file format." f"The JSON object should contain 3 keys in the following order: Reasoning, Answer, and Confidence. " + f"Key #1: Reasoning: A scratchpad where you break down the problem, explore edge cases, and perform step-by-step analysis. Write this FIRST. " + f"Key #2: Answer: This key should be your answer to the question. It can only be one of the following: blue, orange, or same length. " + f"Key #3: Confidence: This key should be the mathematical confidence you have in your answer. It should be your percentage confidence as a decimal between 0 and 1 with three significant digits."
+    system_prompt = f"Whenever you answer questions from the user, answer in a JSON file format." f"The JSON object should contain 3 keys in the following order: Reasoning, Answer, and Confidence. " + f"Key #1: Reasoning: A scratchpad where you break down the problem, explore edge cases, and perform step-by-step analysis. Write this FIRST. " + f"Key #2: Answer: This key should be your answer to the question of which line is longer. It can only be one of the following: blue, red, or same length. " + f"Key #3: Confidence: This key should be the mathematical confidence you have in your answer. It should be your percentage confidence as a decimal between 0 and 1 with three significant digits."
     return system_prompt
 
 def get_line_comparison_system_prompt(num_people):
