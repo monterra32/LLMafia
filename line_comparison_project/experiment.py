@@ -48,18 +48,24 @@ def describe_image(game_configs):
     print(f"Time taken: {after-before} seconds")
     try:
         response_dict = response.json()
+        #print("jsonifying response done")
         response_dict["duration"] = after-before
+        #print("duration added to response_dict")
         response_dict["prompt"] = [
             payload["messages"][1]["content"][0]["text"]
         ]
-        if game_configs["is_context"]:
+        #print("before if statement")
+        if game_configs["is_context"] and game_configs["num_people"] > 0:
+            #print("in if statement")
             response_dict["prompt"].append(payload["messages"][1]["content"][-2]["text"])
+            #print("appended to prompt")
+        print("after if statement")
         return response_dict
     except Exception as e:
         print(f"ERROR: {e}")
         print(response.text)
         print("i think its a malformed json response")
-        return "Error", "Error", "Error", "Error", "Error", "Error"
+        return {"prompt": "Error", "answer": "Error", "reasoning": "Error", "confidence": "Error", "input_tokens": "Error", "output_tokens": "Error", "duration": "Error"}
 
 def parse_ai_response(response_json): #json file type (dict)
     #print(response_json)    # Check if response is valid
@@ -80,8 +86,8 @@ def parse_ai_response(response_json): #json file type (dict)
     if response_str.endswith("```"):
         response_str = re.sub(r'```\s*$', '', response_str)
     content = json.loads(response_str)
-    print(content)
-    print(response_json)
+    #print(content)
+    #print(response_json)
     response_dict = {
         "prompt": response_json["prompt"],
         "answer": content["Answer"], 
@@ -91,7 +97,7 @@ def parse_ai_response(response_json): #json file type (dict)
         "output_tokens": response_json["usage"]["completion_tokens"], 
         "duration": response_json["duration"]
     }
-    print(response_dict)
+    #print(response_dict)
     return response_dict
 
 def save_to_csv(game_configs, response_list):
