@@ -1,0 +1,72 @@
+from openai import OpenAI
+import requests
+import time
+import sys
+from pathlib import Path
+import json
+import csv
+from datetime import datetime
+import re
+import argparse
+import experiment
+import constants
+
+# Add the project root to Python path
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+
+import base64
+
+def run_line_comparison_test(game_configs):
+    num_people = game_configs["num_people"]
+    times_to_run = game_configs["times_to_run"]
+    folder_path = game_configs["folder_path"]
+    is_context = game_configs["is_context"]
+    image_path = game_configs["image_path"]
+    if isinstance(is_context, str):
+        is_context = is_context.lower() in ('true', '1', 'yes', 'on')
+    elif not isinstance(is_context, bool):
+        is_context = bool(is_context)  # Convert other types (int, etc.) to bool
+
+    response_list = []
+    #create the save folder if it doesn't exist
+    script_dir = Path(__file__).parent
+    save_folder = script_dir / folder_path  
+    save_folder.mkdir(parents=True, exist_ok=True)
+    for i in range(times_to_run):
+        response = experiment.describe_image(game_configs)
+        response_list.append(response)
+    experiment.save_to_csv(game_configs, response_list)
+    experiment.save_to_txt(game_configs, response_list)
+
+    print(f"Experiment completed {times_to_run} times")
+    return
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Run two lines experiment")
+    parser.add_argument("-n", "--num_people", type=int, default=0,
+                        help="Number of people to mention in the question (default: 0)")
+    parser.add_argument("-t", "--times_to_run", type=int, default=10,
+                        help="Number of times to run the experiment (default: 10)")
+    parser.add_argument("-f", "--folder_path", type=str, default="data",
+                        help="Folder name to save results in (default: 'data')")
+    parser.add_argument("-c", "--is_context", type=str, default="true",
+                        help="Whether to include context or distillation in the question (default: true)")
+    parser.add_argument("-w", "--wrong_answer", type=str, default="B",
+                        help="The wrong answer. default is B The options are: A, B, or C")
+    parser.add_argument("-i", "--full_image_name", type=str, default="two_lines_similar.png",
+                        help="The image_path (test type). The options are: ")
+    args = parser.parse_args()
+
+    image_path = str(Path(__file__).parent / "test_types" / "asch-2line"/ args.full_image_name)
+    game_configs = {
+        "num_people": args.num_people,
+        "times_to_run": args.times_to_run,
+        "folder_path": args.folder_path,
+        "is_context": args.is_context,
+        "image_path": image_path,
+        "wrong_answer": args.wrong_answer,
+        "correct_answer": image_path.split(".")[0].split("_")[-1]
+    }
+    run_line_comparison_test(game_configs)

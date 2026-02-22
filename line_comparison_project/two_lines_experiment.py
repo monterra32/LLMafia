@@ -1,0 +1,164 @@
+from openai import OpenAI
+import requests
+import time
+import sys
+from pathlib import Path
+import json
+import csv
+from datetime import datetime
+import re
+import argparse
+
+# Add the project root to Python path
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+
+import base64
+
+
+
+
+
+
+
+secrets_file_path = project_root / ".secrets_dict.txt"
+with open(secrets_file_path, "r", encoding="utf-8") as api_file:
+    secrets_dict = json.load(api_file)
+api_key = secrets_dict["OPENAI_API_KEY"]
+
+
+def encode_image(image_path):
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode('utf-8')
+
+def describe_image(image_path, num_people, context=False):
+    before = time.time()
+    base64_image = encode_image(image_path)
+     # This function is not defined yet, but it should be a function that encodes the image to base64.
+
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {api_key}"
+    }
+    payload = constants_folder.experiment_constants.get_two_line_payload(num_people, base64_image, context)
+#gpt-3.5-turbo
+#gpt-4o-realtime-preview
+#gpt-4o-mini
+#gpt-4o 
+    #print(payload)
+    print("posting")
+    response = requests.post(
+        "https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+    after = time.time()
+    print(f"Time taken: {after-before} seconds")
+    try:
+        response_dict = response.json()
+        response_dict["duration"] = after-before
+        return response_dict
+    except Exception as e:
+        print(f"ERROR: {e}")
+        print(response.text)
+        print("i think its a malformed json response")
+        return "Error", "Error", "Error", "Error", "Error", "Error"
+
+def parse_ai_response(response_json):
+    #print(response_json)    # Check if response is valid
+    if "choices" not in response_json or len(response_json["choices"]) == 0:
+        print(f"ERROR: Invalid response structure: {response_json}")
+        raise ValueError("No choices in API response")
+    
+    # Get content and check if it's None
+    response_str = response_json["choices"][0]["message"].get("content")
+    
+    if response_str is None:
+        print(f"ERROR: Content is None. Full response: {json.dumps(response_json, indent=2)}")
+        raise ValueError("API returned None for content field")
+    response_str = response_json["choices"][0]["message"]["content"]
+    #print(response_str)
+    if response_str.startswith("```json"):
+        response_str = re.sub(r'^```(?:json)?\s*\n', '', response_str)
+    if response_str.endswith("```"):
+        response_str = re.sub(r'```\s*$', '', response_str)
+    content = json.loads(response_str)
+    answer = content["Answer"]
+    reasoning = content["Reasoning"]
+    confidence = content["Confidence"]
+    input_tokens = response_json["usage"]["prompt_tokens"]
+    output_tokens = response_json["usage"]["completion_tokens"]
+    duration = response_json["duration"]
+    return answer, reasoning, confidence, input_tokens, output_tokens, duration
+
+def save_to_csv(response_list, num_people, save_folder_path):
+    correct_answer = image_path.split(".")[0].split("_")[-1]
+    image_name = image_path.split("/")[-1].split(".")[0]
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f")
+    save_folder_path = Path(save_folder_path)
+    csv_path = save_folder_path / f"{timestamp}_{image_name}__{len(response_list)}_runs_{num_people}_people.csv"
+    with open(csv_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["answer", "reasoning", "confidence", "num_people", "correct_answer", "input_tokens", "output_tokens", "duration"])
+        for i in range(len(response_list)):
+            try:
+                answer, reasoning, confidence, input_tokens, output_tokens, duration = parse_ai_response(response_list[i])
+            except Exception as e:
+                answer, reasoning, confidence, input_tokens, output_tokens = "Error", "Error", "Error", "Error", "Error"
+                duration = response_list[i]["duration"]
+            writer.writerow([answer, reasoning, confidence, num_people, correct_answer, input_tokens, output_tokens, duration])
+    return
+
+def save_to_txt(response_list, num_people, save_folder_path, context):
+    correct_answer = image_path.split(".")[0].split("_")[-1]
+    image_name = image_path.split("/")[-1].split(".")[0]
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f")
+    txt_path = save_folder_path / f"{timestamp}_{image_name}_correct_answer:{correct_answer}__{len(response_list)}_runs_{num_people}_people.txt"
+    with open(txt_path, "w", encoding="utf-8") as f:
+        f.write(json.dumps(constants_folder.experiment_constants.get_two_line_payload(num_people, "data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=", context)))
+        f.write("\n")
+        f.write("\n")
+        f.write("\n")
+        f.write("\n")
+        for i in range(len(response_list)): 
+            f.write(json.dumps(response_list[i]))
+            f.write("\n")
+            f.write("\n")
+def run_two_lines_experiment(num_people, times_to_run, folder_path, is_context):
+
+    # Convert context to boolean if it's a string
+    if isinstance(is_context, str):
+        is_context = is_context.lower() in ('true', '1', 'yes', 'on')
+    elif not isinstance(is_context, bool):
+        is_context = bool(is_context)  # Convert other types (int, etc.) to bool
+
+    response_list = []
+    #create the save folder if it doesn't exist
+    script_dir = Path(__file__).parent
+    save_folder = script_dir / folder_path  
+    save_folder.mkdir(parents=True, exist_ok=True)
+    error_count = 0
+    for i in range(times_to_run):
+        response = describe_image(image_path, num_people, is_context)
+        response_list.append(response)
+    save_to_csv(response_list, num_people, save_folder)
+    save_to_txt(response_list, num_people, save_folder, is_context)
+
+    print(f"Experiment completed {times_to_run} times")
+    return
+
+#print(describe_image(image_path, 50))
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Run two lines experiment")
+    parser.add_argument("-n", "--num_people", type=int, default=0,
+                        help="Number of people to mention in the question (default: 0)")
+    parser.add_argument("-t", "--times_to_run", type=int, default=10,
+                        help="Number of times to run the experiment (default: 10)")
+    parser.add_argument("-f", "--folder_path", type=str, default="data",
+                        help="Folder name to save results in (default: 'data')")
+    parser.add_argument("-c", "--is_context", type=str, default="true",
+                        help="Whether to include context or distillation in the question (default: true)")
+    parser.add_argument("-i", "--test_type", type=str, default="two_lines_similar.png",
+                        help="The test type. The options are: ")
+    args = parser.parse_args()
+
+    image_path = str(Path(__file__).parent / "test_types" / args.test_type)
+    run_two_lines_experiment(args.num_people, args.times_to_run, args.folder_path, args.is_context)
